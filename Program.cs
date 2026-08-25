@@ -1,5 +1,15 @@
 using DbUp;
 using Microsoft.AspNetCore.Localization;
+using Moonatna.Repositories.Families;
+using Moonatna.Repositories.Items;
+using Moonatna.Repositories.Lookups;
+using Moonatna.Repositories.Recipes;
+using Moonatna.Repositories.SqlConnectionFactory;
+using Moonatna.Repositories.Users;
+using Moonatna.Services.Families;
+using Moonatna.Services.Items;
+using Moonatna.Services.Recipes;
+using Moonatna.Services.Users;
 using Serilog;
 using System.Globalization;
 using System.Reflection;
@@ -14,6 +24,17 @@ builder.Host.UseSerilog((context, config) =>
 builder.Services.AddControllersWithViews();
 
 // Repositories and services get registered here as we build each feature.
+builder.Services.AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
+builder.Services.AddScoped<IItemsRepository, ItemsRepository>();
+builder.Services.AddScoped<IRecipesRepository, RecipesRepository>();
+builder.Services.AddScoped<ILookupsRepository, LookupsRepository>();
+
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IFamiliesService, FamiliesService>();
+builder.Services.AddScoped<IItemsService, ItemsService>();
+builder.Services.AddScoped<IRecipesService, RecipesService>();
 // Authentication middleware arrives with the auth feature (UseAuthentication before UseAuthorization).
 
 var app = builder.Build();

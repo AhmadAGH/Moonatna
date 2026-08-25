@@ -5,9 +5,6 @@
 -- FA icon classes, no ShoppingListItems table
 -- =====================================================
 
-CREATE DATABASE MounatnaDb;
-GO
-
 USE MounatnaDb;
 GO
 
