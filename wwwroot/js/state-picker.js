@@ -1,11 +1,13 @@
 // Long-press radial state picker — موجود / ناقص / خلص.
 // Press and hold an item row (~380ms): options fan out in an arc above the finger.
-// Slide onto one and release to select. A short tap on the state chip also opens it.
+// Slide onto one and release — or release and tap an option. Tap the backdrop to dismiss.
+// NOTE: data-label-0/1/2 must be read via getAttribute — dataset camelCasing
+// does not apply to a dash followed by a digit (dataset.label0 would be undefined).
 (function () {
     const container = document.querySelector("[data-state-picker]");
     if (!container) return;
 
-    const labels = [container.dataset.label0, container.dataset.label1, container.dataset.label2];
+    const labels = [0, 1, 2].map((v) => container.getAttribute(`data-label-${v}`));
     const LONG_PRESS_MS = 380;
     const RADIUS = 100;
     const ANGLES = [-155, -90, -25]; // fan above the press point
@@ -18,7 +20,7 @@
     let picker = null;
     let scrim = null;
     let currentOption = null;
-    let tapMode = false;
+    let slideArmed = false;
 
     container.addEventListener("contextmenu", (e) => {
         if (e.target.closest(".item-row")) e.preventDefault();
@@ -33,13 +35,13 @@
         const chip = e.target.closest(".state-chip");
         if (chip) {
             const r = chip.getBoundingClientRect();
-            openPicker(row, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, true);
+            openPicker(row, { x: r.left + r.width / 2, y: r.top + r.height / 2 }, false);
             return;
         }
 
         activeRow = row;
         pressStart = { x: e.clientX, y: e.clientY };
-        pressTimer = setTimeout(() => openPicker(row, pressStart, false), LONG_PRESS_MS);
+        pressTimer = setTimeout(() => openPicker(row, pressStart, true), LONG_PRESS_MS);
         chargeAnim = row.animate(
             [{ transform: "scale(1)" }, { transform: "scale(0.975)" }],
             { duration: LONG_PRESS_MS, fill: "forwards", easing: "ease-out" });
@@ -53,7 +55,7 @@
     });
 
     document.addEventListener("pointermove", (e) => {
-        if (!picker || tapMode) return;
+        if (!picker || !slideArmed) return;
         let found = null;
         picker.querySelectorAll(".radial-option").forEach((opt) => {
             const r = opt.getBoundingClientRect();
@@ -73,9 +75,13 @@
             cancelPress();
             return;
         }
-        if (picker && !tapMode) {
-            if (currentOption) selectOption(Number(currentOption.dataset.value));
-            else closePicker();
+        if (!picker || !slideArmed) return;
+
+        if (currentOption) {
+            selectOption(Number(currentOption.dataset.value));
+        } else {
+            // Released without a selection — keep the arc open so a tap can choose.
+            slideArmed = false;
         }
     });
 
@@ -89,12 +95,12 @@
         pressStart = null;
     }
 
-    function openPicker(row, point, viaTap) {
+    function openPicker(row, point, slide) {
         cancelPress();
         navigator.vibrate?.(10);
         activeRow = row;
         chargedRow = row;
-        tapMode = viaTap;
+        slideArmed = slide;
         currentOption = null;
 
         row.animate(
@@ -139,7 +145,7 @@
         scrim?.remove();
         picker = scrim = null;
         currentOption = null;
-        tapMode = false;
+        slideArmed = false;
 
         if (chargedRow) {
             chargedRow.animate(

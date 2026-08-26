@@ -4,6 +4,9 @@ const nameInput = document.getElementById("add-item-name");
 const list = document.getElementById("items-list");
 const rowTemplate = document.getElementById("item-row-template");
 
+// data-label-N is read via getAttribute: dataset does not camelCase dash-digit keys.
+const stateLabels = [0, 1, 2].map((v) => container.getAttribute(`data-label-${v}`));
+
 addForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = nameInput.value.trim();
@@ -31,7 +34,7 @@ function appendRow(item) {
 
     const chip = row.querySelector(".state-chip");
     chip.className = `state-chip state-${item.state}`;
-    chip.textContent = container.dataset[`label${item.state}`];
+    chip.textContent = stateLabels[item.state];
 
     getUncategorizedGroup().querySelector("ul").appendChild(row);
     row.animate(
