@@ -1,0 +1,67 @@
+@model RecipeDetailsViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = Model.Name;
+    var missing = Model.Ingredients.Where(i => !i.IsAvailable).ToList();
+}
+
+<section class="recipe-details rise">
+    <header class="page-header">
+        <h1>@Model.Name</h1>
+    </header>
+
+    @if (Model.MissingCount > 0)
+    {
+        <div class="card missing-card">
+            <h2>@L.T("Recipes.MissingTitle")</h2>
+            <ul class="ingredients-list">
+                @foreach (var ing in missing)
+                {
+                    <li class="ingredient-row">
+                        <span class="ingredient-name">@ing.Name</span>
+                        @if (!string.IsNullOrWhiteSpace(ing.QuantityText))
+                        {
+                            <span class="quantity">@ing.QuantityText</span>
+                        }
+                        @if (ing.IsOptional)
+                        {
+                            <span class="opt-chip">@L.T("Recipes.Optional")</span>
+                        }
+                    </li>
+                }
+            </ul>
+            <form asp-controller="Recipes" asp-action="AddMissing" method="post">
+                <input type="hidden" name="recipeId" value="@Model.Id" />
+                <button type="submit" class="btn-primary">@L.T("Recipes.AddMissing")</button>
+            </form>
+        </div>
+    }
+
+    <div class="card">
+        <h2>@L.T("Recipes.IngredientsTitle")</h2>
+        <ul class="ingredients-list">
+            @foreach (var ing in Model.Ingredients)
+            {
+                <li class="ingredient-row">
+                    <span class="ingredient-name">@ing.Name</span>
+                    @if (!string.IsNullOrWhiteSpace(ing.QuantityText))
+                    {
+                        <span class="quantity">@ing.QuantityText</span>
+                    }
+                    @if (ing.IsOptional)
+                    {
+                        <span class="opt-chip">@L.T("Recipes.Optional")</span>
+                    }
+                    <span class="avail-chip @(ing.IsAvailable ? "avail" : "miss")">
+                        @L.T(ing.IsAvailable ? "Recipes.Available" : "Recipes.Missing")
+                    </span>
+                </li>
+            }
+        </ul>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/recipes.css" asp-append-version="true" />
+}
