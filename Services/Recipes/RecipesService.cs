@@ -1,4 +1,4 @@
-﻿using Moonatna.Models;
+using Moonatna.Models;
 using Moonatna.Repositories.Items;
 using Moonatna.Repositories.Recipes;
 using Moonatna.Services.Items;
@@ -16,7 +16,7 @@ namespace Moonatna.Services.Recipes
 
         public async Task<IEnumerable<Recipe>> GetRecipesWithBadgesAsync(int familyId)
             => await _recipes.GetByFamilyIdAsync(familyId);
-        // Counts come from GetMissingIngredientCountsAsync — the controller
+        // Counts come from GetIngredientCountsAsync — the controller
         // pairs them into the ViewModel; tier labels are presentation, not business.
 
         public async Task<int> CreateRecipeAsync(Recipe recipe, IEnumerable<RecipeIngredientInput> ingredients, int userId)
@@ -29,11 +29,19 @@ namespace Moonatna.Services.Recipes
 
                 if (itemId is null)
                 {
-                    // New ingredient: created as OutOfStock so the recipe immediately
-                    // shows what's missing. One-off toggle decides IsAdHoc.
-                    var item = await _itemsService.AddItemAsync(
-                        recipe.FamilyId, input.Name!, null, input.IsAdHoc, ItemState.OutOfStock, userId);
-                    itemId = item.Id;
+                    var existing = await _items.GetByNameAsync(recipe.FamilyId, input.Name!.Trim());
+                    if (existing is not null)
+                    {
+                        itemId = existing.Id;
+                        if (existing.IsArchived)
+                            await _items.ResurrectAsync(existing.Id, ItemState.OutOfStock, existing.IsAdHoc, userId);
+                    }
+                    else
+                    {
+                        var item = await _itemsService.AddItemAsync(
+                            recipe.FamilyId, input.Name!.Trim(), null, input.IsAdHoc, ItemState.OutOfStock, userId);
+                        itemId = item.Id;
+                    }
                 }
 
                 await _recipes.AddIngredientAsync(new RecipeIngredient
@@ -53,9 +61,9 @@ namespace Moonatna.Services.Recipes
         {
             var ingredients = await _recipes.GetIngredientsAsync(recipeId);
 
-            foreach (var ingredient in ingredients.Where(i => !i.IsOptional))
+            foreach (var ing in ingredients.Where(i => !i.IsOptional))
             {
-                var item = await _items.GetByIdAsync(ingredient.ItemId);
+                var item = await _items.GetByIdAsync(ing.ItemId);
                 if (item is null) continue;
 
                 if (item.IsArchived)
@@ -67,6 +75,6 @@ namespace Moonatna.Services.Recipes
 
         public async Task<Recipe?> GetByIdAsync(int recipeId) => await _recipes.GetByIdAsync(recipeId);
         public async Task<IEnumerable<RecipeIngredient>> GetIngredientsAsync(int recipeId) => await _recipes.GetIngredientsAsync(recipeId);
-        public async Task<Dictionary<int, int>> GetMissingCountsAsync(int familyId) => await _recipes.GetMissingIngredientCountsAsync(familyId);
+        public async Task<Dictionary<int, RecipeBadgeCount>> GetIngredientCountsAsync(int familyId) => await _recipes.GetIngredientCountsAsync(familyId);
     }
 }

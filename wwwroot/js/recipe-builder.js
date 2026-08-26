@@ -38,12 +38,13 @@ saveBtn.addEventListener("click", async () => {
 
     const name = nameInput.value.trim();
     const ingredients = [...rowsHost.querySelectorAll(".ingredient-input-row")]
-        .map((r) => ({
+        .map((r, i) => ({
             itemId: null,
             name: r.querySelector(".ing-name").value.trim(),
             quantityText: r.querySelector(".ing-qty").value.trim() || null,
             isOptional: r.querySelector(".ing-optional").checked,
-            isAdHoc: false // recipe ingredients are staples, created OutOfStock when new
+            isAdHoc: false, // recipe ingredients are staples, created OutOfStock when new
+            sortOrder: i    // keep the builder's row order
         }))
         .filter((i) => i.name.length > 0);
 
