@@ -9,6 +9,7 @@
 
     const labels = [0, 1, 2].map((v) => container.getAttribute(`data-label-${v}`));
     const LONG_PRESS_MS = 380;
+    const JITTER_PX = 14; // thumbs drift; too tight and long-press feels broken
     const RADIUS = 100;
     const ANGLES = [-155, -90, -25]; // fan above the press point
 
@@ -48,19 +49,24 @@
 
     container.addEventListener("pointermove", (e) => {
         if (pressTimer && pressStart &&
-            Math.hypot(e.clientX - pressStart.x, e.clientY - pressStart.y) > 10) {
+            Math.hypot(e.clientX - pressStart.x, e.clientY - pressStart.y) > JITTER_PX) {
             cancelPress();
         }
     });
 
     document.addEventListener("pointermove", (e) => {
         if (!picker || !slideArmed) return;
-        let found = null;
+
+        // nearest option wins, anywhere within a full option width of its center
+        let nearest = null;
+        let nearestDist = Infinity;
         picker.querySelectorAll(".radial-option").forEach((opt) => {
             const r = opt.getBoundingClientRect();
             const d = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
-            if (d < r.width * 0.8) found = opt;
+            if (d < nearestDist) { nearestDist = d; nearest = opt; }
         });
+        const found = nearest && nearestDist < nearest.getBoundingClientRect().width ? nearest : null;
+
         if (found !== currentOption) {
             currentOption?.classList.remove("active");
             found?.classList.add("active");
@@ -128,12 +134,18 @@
             opt.addEventListener("click", () => selectOption(value));
             picker.appendChild(opt);
 
-            opt.animate(
+            const entrance = opt.animate(
                 [
                     { transform: "translate(-50%, -50%) translate(0px, 0px) scale(0.2)", opacity: 0 },
                     { transform: `translate(-50%, -50%) translate(${tx}px, ${ty}px) scale(1)`, opacity: 1 }
                 ],
                 { duration: 300, delay: value * 45, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)", fill: "forwards" });
+
+            // Commit the final position into inline style so hover/active scaling
+            // never fights the animation fill.
+            entrance.finished
+                .then(() => { entrance.commitStyles(); entrance.cancel(); })
+                .catch(() => { });
         });
 
         document.body.append(scrim, picker);
