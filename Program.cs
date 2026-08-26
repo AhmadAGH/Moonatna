@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Reflection;
 using DbUp;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -16,8 +18,6 @@ using Moonatna.Services.Localization;
 using Moonatna.Services.Recipes;
 using Moonatna.Services.Users;
 using Serilog;
-using System.Globalization;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +97,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Pantry}/{action=Index}/{id?}");
 
 app.Run();

@@ -1,0 +1,60 @@
+@model FamilySettingsViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Family.Settings.Title");
+}
+
+<section class="settings">
+    <h1 class="settings-title">@Model.Name</h1>
+
+    <div class="card">
+        <h2>@L.T("Family.Settings.JoinCode")</h2>
+        <div class="join-code-row">
+            <code id="join-code" class="join-code" dir="ltr">@Model.JoinCode</code>
+            <button type="button" id="copy-code" class="btn-secondary"
+                    data-copied-text="@L.T("Family.Settings.Copied")">
+                @L.T("Family.Settings.CopyCode")
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>@L.T("Family.Settings.Members")</h2>
+        <ul class="members-list">
+            @foreach (var m in Model.Members)
+            {
+                <li>
+                    <span>@m.DisplayName</span>
+                    <span class="badge @(m.Role == FamilyRole.Owner ? "badge-owner" : "")">
+                        @L.T(m.Role == FamilyRole.Owner ? "Family.Role.Owner" : "Family.Role.Member")
+                    </span>
+                </li>
+            }
+        </ul>
+    </div>
+
+    @if (Model.IsOwner)
+    {
+        <div class="card">
+            <h2>@L.T("Family.Settings.AutoPromote")</h2>
+            <p class="hint">@L.T("Family.Settings.AutoPromoteHint")</p>
+            <form asp-controller="Family" asp-action="UpdateSettings" method="post" id="autopromote-form">
+                <input type="hidden" asp-for="FamilyId" />
+                <label class="switch">
+                    <input type="checkbox" asp-for="AutoPromoteAdHoc" />
+                    <span class="slider"></span>
+                </label>
+                <button type="submit" class="btn-primary" id="autopromote-save">@L.T("Family.Settings.Save")</button>
+            </form>
+        </div>
+    }
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/settings.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/settings.js" asp-append-version="true"></script>
+}
