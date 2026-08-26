@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Moonatna.Models;
 using Moonatna.Repositories.SqlConnectionFactory;
 
@@ -63,8 +63,6 @@ public class RecipesRepository : IRecipesRepository
         await connection.ExecuteAsync(sql, new { id });
     }
 
-    // ============ Ingredients ============
-
     public async Task<IEnumerable<RecipeIngredient>> GetIngredientsAsync(int recipeId)
     {
         const string sql = """
@@ -81,7 +79,7 @@ public class RecipesRepository : IRecipesRepository
     {
         const string sql = """
             INSERT INTO [dbo].[RecipeIngredients] ([RecipeId], [ItemId], [QuantityText], [IsOptional], [SortOrder])
-            VALUES (@RecipeId, @ItemId, @QuantityText, @IsOptional, @SortOrder);
+            VALUES (@RecipeId, @ItemId, @QuantityText, @IsOptional, @SortOrder)
             """;
 
         using var connection = _connectionFactory.Create();
@@ -96,11 +94,12 @@ public class RecipesRepository : IRecipesRepository
         await connection.ExecuteAsync(sql, new { id });
     }
 
-    public async Task<Dictionary<int, int>> GetMissingIngredientCountsAsync(int familyId)
+    public async Task<Dictionary<int, RecipeBadgeCount>> GetIngredientCountsAsync(int familyId)
     {
         const string sql = """
         SELECT r.[Id] AS [RecipeId],
-               COUNT(CASE WHEN ri.[IsOptional] = 0 AND (i.[State] <> 0 OR i.[IsArchived] = 1) THEN 1 END) AS [MissingCount]
+               COUNT(CASE WHEN ri.[IsOptional] = 0 AND (i.[State] <> 0 OR i.[IsArchived] = 1) THEN 1 END) AS [MissingCount],
+               COUNT(CASE WHEN ri.[IsOptional] = 0 AND ri.[Id] IS NOT NULL THEN 1 END) AS [RequiredCount]
         FROM [dbo].[Recipes] r
         LEFT JOIN [dbo].[RecipeIngredients] ri ON ri.[RecipeId] = r.[Id]
         LEFT JOIN [dbo].[Items] i ON i.[Id] = ri.[ItemId]
@@ -110,6 +109,6 @@ public class RecipesRepository : IRecipesRepository
 
         using var connection = _connectionFactory.Create();
         var rows = await connection.QueryAsync<RecipeBadgeCount>(sql, new { familyId });
-        return rows.ToDictionary(x => x.RecipeId, x => x.MissingCount);
+        return rows.ToDictionary(x => x.RecipeId, x => x);
     }
 }

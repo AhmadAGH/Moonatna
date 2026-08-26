@@ -12,12 +12,14 @@ public class RecipeCardViewModel
     public string Name { get; set; } = string.Empty;
     public string? PhotoPath { get; set; }
     public int MissingCount { get; set; }
+    public int RequiredCount { get; set; }   // non-optional ingredients only
 
     public RecipeBadgeTier BadgeTier => MissingCount switch
     {
         0 => RecipeBadgeTier.Doable,
-        <= 2 => RecipeBadgeTier.MissingFew,
-        _ => RecipeBadgeTier.MissingALot
+        // Tiny recipes tolerate no gaps; larger ones absorb a few missing items.
+        _ when RequiredCount <= 3 => RecipeBadgeTier.MissingALot,
+        _ => (double)MissingCount / RequiredCount > 0.45 ? RecipeBadgeTier.MissingALot : RecipeBadgeTier.MissingFew
     };
 
     public string BadgeKey => $"RecipeBadge.{BadgeTier}";

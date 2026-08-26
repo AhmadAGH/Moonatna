@@ -15,7 +15,7 @@ function addRow(focus) {
     const qtyEl = row.querySelector(".ing-qty");
     nameEl.placeholder = root.dataset.ingredientPh;
     qtyEl.placeholder = root.dataset.qtyPh;
-    row.querySelector(".opt-check span").textContent = root.dataset.optionalLabel;
+    row.querySelector(".opt-check .opt-label").textContent = root.dataset.optionalLabel;
 
     const removeBtn = row.querySelector(".remove-row");
     removeBtn.title = root.dataset.removeLabel;
@@ -42,7 +42,8 @@ saveBtn.addEventListener("click", async () => {
             itemId: null,
             name: r.querySelector(".ing-name").value.trim(),
             quantityText: r.querySelector(".ing-qty").value.trim() || null,
-            isOptional: r.querySelector(".ing-optional").checked
+            isOptional: r.querySelector(".ing-optional").checked,
+            isAdHoc: false // recipe ingredients are staples, created OutOfStock when new
         }))
         .filter((i) => i.name.length > 0);
 
