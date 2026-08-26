@@ -1,23 +1,56 @@
-.state-picker {
-    position: absolute;
-    z-index: 100;
-    display: flex;
-    gap: 0.5rem;
-    background-color: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    padding: 0.4rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateX(-50%);
+/* Long-press radial state picker */
+
+.radial-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background-color: rgba(35, 33, 28, 0.22);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
 }
 
-.state-option {
+.radial-picker {
+    position: fixed;
+    z-index: 210;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+.radial-option {
+    position: absolute;
+    left: 0;
+    top: 0;
+    min-width: 3.6rem;
+    height: 3.6rem;
+    padding: 0 0.6rem;
     border: none;
-    border-radius: 999px;
-    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font: inherit;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ffffff;
+    box-shadow: var(--shadow-lg);
     cursor: pointer;
-    white-space: nowrap;
+    pointer-events: auto;
+    transition: box-shadow 0.15s;
+}
+
+.radial-option.state-0 {
+    background-color: var(--green);
+}
+
+.radial-option.state-1 {
+    background-color: var(--amber);
+}
+
+.radial-option.state-2 {
+    background-color: var(--red);
+}
+
+.radial-option.active {
+    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.65), var(--shadow-lg);
 }

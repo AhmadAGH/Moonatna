@@ -2,22 +2,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 60vh;
+    min-height: 62vh;
 }
 
 .login-card {
     background-color: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 2.5rem 2rem;
+    padding: 2rem 2rem 2.25rem;
     max-width: 24rem;
     width: 100%;
     text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: rise 0.45s var(--ease-out) both;
 }
 
 .login-title {
-    margin: 0 0 0.5rem;
-    font-size: 1.5rem;
+    margin: 0 0 0.4rem;
+    font-size: 1.55rem;
+    font-weight: 800;
 }
 
 .login-subtitle {
@@ -32,6 +35,7 @@
 
 .login-error {
     margin: 1rem 0 0;
-    color: #b91c1c;
+    color: var(--red);
     font-size: 0.9rem;
+    font-weight: 500;
 }

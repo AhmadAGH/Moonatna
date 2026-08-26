@@ -9,7 +9,7 @@
         .ThenBy(g => g.Key);
 }
 
-<section class="items-page"
+<section class="items-page rise"
          data-state-picker
          data-set-state-url="@Url.Action("SetState", "Items")"
          data-label-0="@L.T("ItemState.Available")"
@@ -25,7 +25,10 @@
         </form>
     </header>
 
-    <p class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>@L.T("Pantry.Empty")</p>
+    <div class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>
+        <div class="lottie-mount" data-lottie="float"></div>
+        <p>@L.T("Pantry.Empty")</p>
+    </div>
 
     <div id="items-list">
         @foreach (var group in groups)
@@ -35,11 +38,9 @@
                 <ul>
                     @foreach (var item in group)
                     {
-                        <li class="item-row" data-item-id="@item.Id">
+                        <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
                             <span class="item-name">@item.Name</span>
-                            <button type="button" class="state-badge state-@((int)item.State)" data-state="@((int)item.State)">
-                                @L.T(item.StateKey)
-                            </button>
+                            <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
                         </li>
                     }
                 </ul>
@@ -48,9 +49,9 @@
     </div>
 
     <template id="item-row-template">
-        <li class="item-row" data-item-id="0">
+        <li class="item-row" data-item-id="0" data-state="0">
             <span class="item-name"></span>
-            <button type="button" class="state-badge state-0" data-state="0"></button>
+            <span class="state-chip state-0"></span>
         </li>
     </template>
 </section>
@@ -61,6 +62,7 @@
 }
 
 @section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
     <script src="~/js/state-picker.js" asp-append-version="true"></script>
     <script src="~/js/pantry.js" asp-append-version="true"></script>
 }

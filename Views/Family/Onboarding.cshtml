@@ -5,8 +5,9 @@
     ViewData["Title"] = L.T("Family.Onboarding.Title");
 }
 
-<section class="onboarding">
+<section class="onboarding rise">
     <header class="onboarding-header">
+        <div class="lottie-mount lottie-hero" data-lottie="float"></div>
         <h1>@L.T("Family.Onboarding.Title")</h1>
         <p>@L.T("Family.Onboarding.Subtitle")</p>
     </header>
@@ -40,5 +41,6 @@
 }
 
 @section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
     <script src="~/js/onboarding.js" asp-append-version="true"></script>
 }

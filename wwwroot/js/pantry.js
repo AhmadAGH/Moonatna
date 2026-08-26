@@ -26,14 +26,17 @@ addForm.addEventListener("submit", async (e) => {
 function appendRow(item) {
     const row = rowTemplate.content.firstElementChild.cloneNode(true);
     row.dataset.itemId = item.id;
+    row.dataset.state = item.state;
     row.querySelector(".item-name").textContent = item.name;
 
-    const badge = row.querySelector(".state-badge");
-    badge.dataset.state = item.state;
-    badge.className = `state-badge state-${item.state}`;
-    badge.textContent = container.dataset[`label${item.state}`];
+    const chip = row.querySelector(".state-chip");
+    chip.className = `state-chip state-${item.state}`;
+    chip.textContent = container.dataset[`label${item.state}`];
 
     getUncategorizedGroup().querySelector("ul").appendChild(row);
+    row.animate(
+        [{ opacity: 0, transform: "translateY(8px) scale(0.98)" }, { opacity: 1, transform: "none" }],
+        { duration: 280, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" });
 }
 
 function getUncategorizedGroup() {
