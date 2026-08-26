@@ -68,7 +68,6 @@ public class RecipesController : BaseController
             var item = await _items.GetByIdAsync(ing.ItemId);
             rows.Add(new RecipeIngredientViewModel
             {
-                Id = ing.Id,
                 ItemId = ing.ItemId,
                 Name = item?.Name ?? "?",
                 QuantityText = ing.QuantityText,
@@ -155,8 +154,17 @@ public class RecipesController : BaseController
 
         var recipe = await _recipes.GetByIdAsync(vm.Id);
         if (recipe is null || recipe.FamilyId != family.Id) return NotFound();
+        var inputs = vm.Ingredients.Select(i => new RecipeIngredientInput
+        {
+            ItemId = i.ItemId,
+            Name = i.Name,
+            QuantityText = i.QuantityText,
+            IsOptional = i.IsOptional,
+            IsAdHoc = i.IsAdHoc,
+            SortOrder = i.SortOrder
+        });
 
-        await _recipes.UpdateRecipeAsync(recipe, vm.Name, vm.PhotoPath, vm.Ingredients, UserId);
+        await _recipes.UpdateRecipeAsync(recipe, vm.Name, vm.PhotoPath,inputs, UserId);
         return Ok(new { redirect = Url.Action(nameof(Details), new { id = recipe.Id }) });
     }
 

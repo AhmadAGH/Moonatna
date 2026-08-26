@@ -17,6 +17,8 @@ public class RecipeEditIngredientViewModel
     public string Name { get; set; } = string.Empty;
     public string? QuantityText { get; set; }
     public bool IsOptional { get; set; }
+    public int SortOrder { get; set; }
+    public bool IsAdHoc { get; set; }
 }
 
 public class RemoveIngredientViewModel

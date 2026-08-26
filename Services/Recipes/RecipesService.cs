@@ -61,14 +61,13 @@ namespace Moonatna.Services.Recipes
         // name is unchanged keeps its Item link; a renamed row is re-matched by name
         // (linking to an existing pantry item) or creates a new one.
         public async Task UpdateRecipeAsync(Recipe recipe, string name, string? photoPath,
-            IEnumerable<RecipeIngredientInput> ingredients, int userId)
+    IEnumerable<RecipeIngredientInput> ingredients, int userId)
         {
             recipe.Name = name;
             recipe.PhotoPath = photoPath;
             await _recipes.UpdateAsync(recipe);
 
-            var existing = (await _recipes.GetIngredientsAsync(recipe.Id)).ToList();
-            var byId = existing.ToDictionary(e => e.Id);
+            var existing = await _recipes.GetIngredientsAsync(recipe.Id);
             foreach (var old in existing)
                 await _recipes.DeleteIngredientAsync(old.Id);
 
@@ -77,14 +76,13 @@ namespace Moonatna.Services.Recipes
                 var rowName = input.Name?.Trim();
                 if (string.IsNullOrEmpty(rowName)) continue;
 
-                int? itemId = null;
+                var itemId = input.ItemId;
 
-                if (input.IngredientId is not null && byId.TryGetValue(input.IngredientId.Value, out var prev))
+                if (itemId is not null)
                 {
-                    var prevItem = await _items.GetByIdAsync(prev.ItemId);
-                    if (prevItem is not null && prevItem.Name == rowName)
-                        itemId = prev.ItemId; // untouched row — keep the link
-                    // name changed → fall through and re-match by name
+                    var current = await _items.GetByIdAsync(itemId.Value);
+                    if (current is null || current.Name != rowName)
+                        itemId = null; // renamed or stale link — re-match by name below
                 }
 
                 if (itemId is null)
@@ -120,7 +118,7 @@ namespace Moonatna.Services.Recipes
         public async Task<bool> RemoveIngredientAsync(int recipeId, int ingredientId, int familyId)
         {
             var recipe = await _recipes.GetByIdAsync(recipeId);
-            if (recipe is null || recipe.FamilyId != family.Id) return false;
+            if (recipe is null || recipe.FamilyId != familyId) return false;
 
             var ingredients = await _recipes.GetIngredientsAsync(recipeId);
             if (!ingredients.Any(i => i.Id == ingredientId)) return false;

@@ -1,3 +1,5 @@
+using Moonatna.Models;
+
 namespace Moonatna.Repositories.Recipes
 {
     public interface IRecipesRepository
