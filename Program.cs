@@ -5,6 +5,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Moonatna.Repositories.Families;
 using Moonatna.Repositories.Items;
@@ -61,6 +62,13 @@ builder.Services.AddScoped<IRecipesService, RecipesService>();
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 
 var app = builder.Build();
+
+// Behind nginx: honor X-Forwarded-For/Proto so the app sees the real client
+// scheme/IP instead of the loopback proxy.
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // ============ Database migrations (DbUp) ============
 var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
