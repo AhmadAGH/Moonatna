@@ -80,7 +80,9 @@ if (!result.Successful)
     throw new InvalidOperationException("Database migration failed.", result.Error);
 }
 
-var supportedCultures = new[] { new CultureInfo("ar-SA"), new CultureInfo("en") };
+// Arabic-only until the EN language switcher ships — keeps browsers'
+// Accept-Language: en from overriding the Arabic UI.
+var supportedCultures = new[] { new CultureInfo("ar-SA") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture("ar-SA"),

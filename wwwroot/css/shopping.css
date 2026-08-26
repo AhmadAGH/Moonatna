@@ -1,0 +1,5 @@
+/* Shopping page — shared item-list styles live in layout.css. */
+
+.page-header .btn-secondary {
+    white-space: nowrap;
+}
