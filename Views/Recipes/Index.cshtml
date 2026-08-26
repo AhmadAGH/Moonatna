@@ -1,0 +1,36 @@
+@model RecipesIndexViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Recipes.Title");
+}
+
+<section class="recipes-page rise">
+    <header class="page-header">
+        <h1>@L.T("Recipes.Title")</h1>
+        <a class="btn-primary" asp-controller="Recipes" asp-action="Create">@L.T("Recipes.NewButton")</a>
+    </header>
+
+    <div class="empty-state" @(Model.Recipes.Count > 0 ? "hidden" : null)>
+        <div class="lottie-mount" data-lottie="float"></div>
+        <p>@L.T("Recipes.Empty")</p>
+    </div>
+
+    <div class="recipes-grid">
+        @foreach (var r in Model.Recipes)
+        {
+            <a class="recipe-card" asp-controller="Recipes" asp-action="Details" asp-route-id="@r.Id">
+                <span class="recipe-name">@r.Name</span>
+                <span class="recipe-badge badge-@r.BadgeTier.ToString().ToLowerInvariant()">@L.T(r.BadgeKey)</span>
+            </a>
+        }
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/recipes.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
+}

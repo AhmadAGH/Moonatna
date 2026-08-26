@@ -5,6 +5,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Moonatna.Repositories.Families;
 using Moonatna.Repositories.Items;
@@ -14,6 +15,7 @@ using Moonatna.Repositories.SqlConnectionFactory;
 using Moonatna.Repositories.Users;
 using Moonatna.Services.Families;
 using Moonatna.Services.Items;
+using Moonatna.Services.Localization;
 using Moonatna.Services.Recipes;
 using Moonatna.Services.Users;
 using Serilog;
@@ -57,8 +59,16 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IFamiliesService, FamiliesService>();
 builder.Services.AddScoped<IItemsService, ItemsService>();
 builder.Services.AddScoped<IRecipesService, RecipesService>();
+builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 
 var app = builder.Build();
+
+// Behind nginx: honor X-Forwarded-For/Proto so the app sees the real client
+// scheme/IP instead of the loopback proxy.
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 // ============ Database migrations (DbUp) ============
 var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
@@ -78,7 +88,9 @@ if (!result.Successful)
     throw new InvalidOperationException("Database migration failed.", result.Error);
 }
 
-var supportedCultures = new[] { new CultureInfo("ar-SA"), new CultureInfo("en") };
+// Arabic-only until the EN language switcher ships — keeps browsers'
+// Accept-Language: en from overriding the Arabic UI.
+var supportedCultures = new[] { new CultureInfo("ar-SA") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture("ar-SA"),
@@ -95,6 +107,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Pantry}/{action=Index}/{id?}");
 
 app.Run();

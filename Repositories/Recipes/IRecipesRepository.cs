@@ -1,4 +1,4 @@
-﻿using Moonatna.Models;
+using Moonatna.Models;
 
 namespace Moonatna.Repositories.Recipes
 {
@@ -14,7 +14,6 @@ namespace Moonatna.Repositories.Recipes
         Task<IEnumerable<RecipeIngredient>> GetIngredientsAsync(int recipeId);
         Task AddIngredientAsync(RecipeIngredient ingredient);
         Task DeleteIngredientAsync(int id);
-        Task<Dictionary<int, int>> GetMissingIngredientCountsAsync(int familyId);
-
+        Task<Dictionary<int, RecipeBadgeCount>> GetIngredientCountsAsync(int familyId);
     }
 }

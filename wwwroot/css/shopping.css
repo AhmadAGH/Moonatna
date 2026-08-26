@@ -1,0 +1,62 @@
+/* Shopping page — swipe rows + quick add. Shared list styles live in layout.css. */
+
+.page-header .btn-secondary {
+    white-space: nowrap;
+}
+
+.swipe-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+}
+
+.swipe-wrap + .swipe-wrap {
+    border-top: 1px solid var(--border);
+}
+
+/* The under-layer sits behind the row visually and never receives events —
+   without this it paints above the row and swallows every press. */
+.swipe-under {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* RTL: the ✓ label anchors to the start side */
+    padding-inline: 1.1rem;
+    background-color: var(--green);
+    color: #ffffff;
+    font-weight: 700;
+    opacity: 0;
+}
+
+.swipe-wrap .item-row {
+    position: relative;
+    z-index: 1;
+    background-color: var(--surface);
+}
+
+.swipe-wrap .item-row:hover {
+    background-color: var(--surface-2);
+}
+
+.adhoc-tag {
+    display: inline-block;
+    margin-inline-start: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--amber);
+    background-color: var(--amber-soft);
+    border-radius: var(--radius-full);
+    padding: 0.08rem 0.55rem;
+    vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+    .add-form {
+        max-width: none;
+        width: 100%;
+        order: 3;
+    }
+}

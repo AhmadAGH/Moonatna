@@ -1,0 +1,57 @@
+@model RecipeCreateViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Recipes.CreateTitle");
+}
+
+<section class="recipe-builder rise"
+         data-create-url="@Url.Action("Create", "Recipes")"
+         data-ingredient-ph="@L.T("Recipes.IngredientPlaceholder")"
+         data-qty-ph="@L.T("Recipes.QuantityPlaceholder")"
+         data-optional-label="@L.T("Recipes.Optional")"
+         data-remove-label="@L.T("Recipes.RemoveIngredient")"
+         data-error-text="@L.T("Recipes.Error")">
+
+    <header class="page-header">
+        <h1>@L.T("Recipes.CreateTitle")</h1>
+    </header>
+
+    <div class="card builder-card">
+        <input id="recipe-name" class="input recipe-name-input" placeholder="@L.T("Recipes.NamePlaceholder")" autocomplete="off" />
+
+        <h2 class="builder-sub">@L.T("Recipes.IngredientsTitle")</h2>
+        <div id="ingredient-rows" class="ingredient-rows"></div>
+
+        <button type="button" id="add-ingredient" class="btn-secondary">+ @L.T("Recipes.AddIngredient")</button>
+
+        <p id="builder-error" class="alert-error" hidden></p>
+
+        <button type="button" id="save-recipe" class="btn-primary save-btn">@L.T("Recipes.Save")</button>
+    </div>
+
+    <template id="ingredient-row-template">
+        <div class="ingredient-input-row">
+            <input class="input ing-name" autocomplete="off" />
+            <input class="input ing-qty" dir="ltr" autocomplete="off" />
+            <label class="opt-check">
+                <input type="checkbox" class="ing-optional" />
+                <span class="opt-track">
+                    <span class="opt-knob">
+                        <svg viewBox="0 0 12 12"><path d="M2.5 6.5 5 9 9.5 3.5" /></svg>
+                    </span>
+                </span>
+                <span class="opt-label"></span>
+            </label>
+            <button type="button" class="remove-row">✕</button>
+        </div>
+    </template>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/recipes.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/recipe-builder.js" asp-append-version="true"></script>
+}

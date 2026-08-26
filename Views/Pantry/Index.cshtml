@@ -1,0 +1,68 @@
+@model PantryIndexViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Pantry.Title");
+    var groups = Model.Items
+        .GroupBy(i => i.CategoryName)
+        .OrderBy(g => g.Key is null)
+        .ThenBy(g => g.Key);
+}
+
+<section class="items-page rise"
+         data-state-picker
+         data-set-state-url="@Url.Action("SetState", "Items")"
+         data-label-0="@L.T("ItemState.Available")"
+         data-label-1="@L.T("ItemState.RunningLow")"
+         data-label-2="@L.T("ItemState.OutOfStock")"
+         data-uncategorized="@L.T("Common.Uncategorized")">
+
+    <header class="page-header">
+        <h1>@L.T("Pantry.Title")</h1>
+        <form id="add-item-form" class="add-form" data-add-url="@Url.Action("Add", "Items")">
+            <input id="add-item-name" class="input" placeholder="@L.T("Pantry.AddPlaceholder")" autocomplete="off" />
+            <button type="submit" class="btn-primary">@L.T("Pantry.AddButton")</button>
+        </form>
+    </header>
+
+    <div class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>
+        <div class="lottie-mount" data-lottie="float"></div>
+        <p>@L.T("Pantry.Empty")</p>
+    </div>
+
+    <div id="items-list">
+        @foreach (var group in groups)
+        {
+            <section class="category-group" data-category-group="@(group.Key ?? "")">
+                <h2>@(group.Key ?? L.T("Common.Uncategorized"))</h2>
+                <ul>
+                    @foreach (var item in group)
+                    {
+                        <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                            <span class="item-name">@item.Name</span>
+                            <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+    </div>
+
+    <template id="item-row-template">
+        <li class="item-row" data-item-id="0" data-state="0">
+            <span class="item-name"></span>
+            <span class="state-chip state-0"></span>
+        </li>
+    </template>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/state-picker.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pantry.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
+    <script src="~/js/state-picker.js" asp-append-version="true"></script>
+    <script src="~/js/pantry.js" asp-append-version="true"></script>
+}

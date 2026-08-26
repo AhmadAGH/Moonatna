@@ -1,0 +1,60 @@
+name: Deploy Moonatna
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish for Linux
+        run: dotnet publish ./Moonatna.csproj -c Release --self-contained false -o ./publish
+
+      - name: Replace placeholders in appsettings
+        env:
+          FIREBASE_CONFIG: ${{ secrets.PROD_FIREBASE_CONFIG }}
+        run: |
+          sed -i "s|@ConnectionString|${{ secrets.PROD_CONNECTION_STRING }}|g" ./publish/appsettings.Production.json
+
+          jq --argjson firebase "$FIREBASE_CONFIG" \
+             '.Firebase = $firebase' \
+             ./publish/appsettings.Production.json > tmp.json && mv tmp.json ./publish/appsettings.Production.json
+
+      - name: Stop service before copying files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_SSH_PASSWORD }}
+          script: sudo systemctl stop Moonatna.service || true
+
+      - name: Deploy files via SCP
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_SSH_PASSWORD }}
+          source: "publish/*"
+          target: "/root/apps/Moonatna"
+          strip_components: 1
+
+      - name: Set permissions and restart service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_SSH_PASSWORD }}
+          script: |
+            chown -R www-data:www-data /root/apps/Moonatna
+            chmod 600 /root/apps/Moonatna/appsettings.Production.json
+            sudo systemctl restart Moonatna.service
+            sleep 2
+            sudo systemctl status Moonatna.service --no-pager

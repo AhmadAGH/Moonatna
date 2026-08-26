@@ -1,0 +1,15 @@
+{
+  "name": "موناتنا",
+  "short_name": "موناتنا",
+  "description": "مخزن بيتك وقائمة تسوق عائلتك",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#f6f4ee",
+  "theme_color": "#0d7377",
+  "icons": [
+    { "src": "/img/logo.png", "sizes": "1254x1254", "type": "image/png", "purpose": "any" }
+  ]
+}

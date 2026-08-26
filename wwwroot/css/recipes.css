@@ -1,0 +1,412 @@
+/* Recipes — index grid, details, builder. Shared tokens/components in layout.css. */
+
+a.btn-primary {
+    text-decoration: none;
+}
+
+/* ---------- index ---------- */
+.recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+}
+
+.recipe-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.3rem;
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.22s var(--ease-out), transform 0.22s var(--ease-out);
+}
+
+.recipe-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+.recipe-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.recipe-badge {
+    align-self: flex-start;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    padding: 0.28rem 0.85rem;
+}
+
+.badge-doable {
+    background-color: var(--green-soft);
+    color: var(--green);
+}
+
+.badge-missingfew {
+    background-color: var(--amber-soft);
+    color: var(--amber);
+}
+
+.badge-missingalot {
+    background-color: var(--red-soft);
+    color: var(--red);
+}
+
+/* ---------- details ---------- */
+.recipe-details-header {
+    align-items: flex-start;
+}
+
+.overflow-menu {
+    position: relative;
+}
+
+.menu-trigger {
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    border-radius: var(--radius-full);
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.menu-trigger:hover {
+    color: var(--text);
+    background-color: var(--surface-2);
+}
+
+.menu-pop {
+    position: absolute;
+    top: 110%;
+    inset-inline-end: 0;
+    z-index: 60;
+    min-width: 9rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    padding: 0.35rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-pop a,
+.menu-pop button {
+    display: block;
+    width: 100%;
+    text-align: start;
+    padding: 0.55rem 0.8rem;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 0.92rem;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.menu-pop a:hover,
+.menu-pop button:hover {
+    background-color: var(--surface-2);
+}
+
+.menu-pop .menu-danger {
+    color: var(--red);
+}
+
+.missing-bar {
+    margin-bottom: 1rem;
+}
+
+.missing-bar form {
+    margin: 0;
+}
+
+.ingredients-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ingredient-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-sm);
+    border-bottom: 1px solid var(--border);
+}
+
+.ingredient-row:last-child {
+    border-bottom: none;
+}
+
+.ingredient-row.is-missing {
+    background-color: var(--amber-soft);
+}
+
+.ingredient-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.quantity {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.opt-chip {
+    font-size: 0.75rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 0.1rem 0.6rem;
+}
+
+.avail-chip {
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    padding: 0.28rem 0.85rem;
+}
+
+.avail-chip.avail {
+    background-color: var(--green-soft);
+    color: var(--green);
+}
+
+.avail-chip.miss {
+    background-color: var(--red-soft);
+    color: var(--red);
+}
+
+/* ---------- delete modal ---------- */
+.modal-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background-color: rgba(35, 33, 28, 0.4);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal {
+    background-color: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    max-width: 24rem;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: rise 0.3s var(--ease-out) both;
+}
+
+.modal h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.15rem;
+}
+
+.modal p {
+    margin: 0 0 1.4rem;
+    color: var(--muted);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+}
+
+.modal-actions form {
+    margin: 0;
+}
+
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--red);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.6rem 1.3rem;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, transform 0.12s;
+}
+
+.btn-danger:hover {
+    background-color: #922b23;
+    transform: translateY(-1px);
+}
+
+.btn-danger:active {
+    transform: scale(0.97);
+}
+
+/* ---------- builder ---------- */
+.builder-card {
+    max-width: 40rem;
+}
+
+.recipe-name-input {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.builder-sub {
+    margin: 1.5rem 0 0.75rem;
+    font-size: 1rem;
+}
+
+.ingredient-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+}
+
+.ingredient-input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.ingredient-input-row .ing-name {
+    flex: 2;
+}
+
+.ingredient-input-row .ing-qty {
+    flex: 1;
+    min-width: 5rem;
+}
+
+/* Animated optional pill: knob slides, track fills teal, check draws in. */
+.opt-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.opt-check:hover {
+    color: var(--text);
+}
+
+.opt-check input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.opt-track {
+    position: relative;
+    width: 2.4rem;
+    height: 1.4rem;
+    border-radius: var(--radius-full);
+    background-color: var(--border);
+    transition: background-color 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out);
+    flex-shrink: 0;
+}
+
+.opt-knob {
+    position: absolute;
+    top: 0.2rem;
+    inset-inline-start: 0.2rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.22s var(--ease-spring);
+}
+
+.opt-knob svg {
+    position: absolute;
+    inset: 0.12rem;
+    width: 0.76rem;
+    height: 0.76rem;
+}
+
+.opt-knob svg path {
+    stroke: #ffffff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    stroke-dasharray: 14;
+    stroke-dashoffset: 14;
+    transition: stroke-dashoffset 0.2s ease-out 0.08s;
+}
+
+.opt-check input:checked + .opt-track {
+    background-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.opt-check input:checked + .opt-track .opt-knob {
+    transform: translateX(-1rem); /* slides left in RTL */
+}
+
+.opt-check input:checked + .opt-track .opt-knob svg path {
+    stroke-dashoffset: 0;
+}
+
+.opt-check input:focus-visible + .opt-track {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.remove-row {
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: var(--radius-full);
+    width: 2rem;
+    height: 2rem;
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.remove-row:hover {
+    color: var(--red);
+    background-color: var(--red-soft);
+}
+
+.save-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+    .ingredient-input-row {
+        flex-wrap: wrap;
+    }
+
+    .ingredient-input-row .ing-name {
+        flex: 1 1 100%;
+    }
+}

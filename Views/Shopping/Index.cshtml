@@ -1,0 +1,88 @@
+@model ShoppingListViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Shopping.Title");
+    var groups = Model.Items
+        .GroupBy(i => i.CategoryName)
+        .OrderBy(g => g.Key is null)
+        .ThenBy(g => g.Key);
+}
+
+<section class="items-page rise"
+         data-purchase-url="@Url.Action("Purchase", "Items")"
+         data-uncategorized="@L.T("Common.Uncategorized")">
+
+    <header class="page-header">
+        <h1>@L.T("Shopping.Title")</h1>
+        <form id="add-item-form" class="add-form" data-add-url="@Url.Action("Add", "Items")">
+            <input id="add-item-name" class="input" placeholder="@L.T("Shopping.AddPlaceholder")" autocomplete="off" />
+            <button type="submit" class="btn-primary">@L.T("Shopping.AddButton")</button>
+        </form>
+        <button type="button" id="copy-list" class="btn-secondary"
+                data-copied-text="@L.T("Shopping.Copied")"
+                @(Model.Items.Count == 0 ? "hidden" : null)>
+            @L.T("Shopping.CopyList")
+        </button>
+    </header>
+
+    <div class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>
+        <div class="lottie-mount" data-lottie="float"></div>
+        <p>@L.T("Shopping.Empty")</p>
+    </div>
+
+    <div id="items-list">
+        @foreach (var group in groups)
+        {
+            <section class="category-group" data-category-group="@(group.Key ?? "")">
+                <h2>@(group.Key ?? L.T("Common.Uncategorized"))</h2>
+                <ul>
+                    @foreach (var item in group)
+                    {
+                        <li class="swipe-wrap">
+                            <div class="swipe-under"><span>✓ @L.T("Shopping.Purchased")</span></div>
+                            <div class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                                <span class="item-name">
+                                    <span class="item-name-text">@item.Name</span>
+                                    @if (item.IsAdHoc)
+                                    {
+                                        <span class="adhoc-tag">@L.T("Item.AdHoc")</span>
+                                    }
+                                </span>
+                                <div class="row-actions">
+                                    <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
+                                    <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+    </div>
+
+    <template id="item-row-template">
+        <li class="swipe-wrap">
+            <div class="swipe-under"><span>✓ @L.T("Shopping.Purchased")</span></div>
+            <div class="item-row" data-item-id="0" data-state="2">
+                <span class="item-name">
+                    <span class="item-name-text"></span>
+                    <span class="adhoc-tag">@L.T("Item.AdHoc")</span>
+                </span>
+                <div class="row-actions">
+                    <span class="state-chip state-2">@L.T("ItemState.OutOfStock")</span>
+                    <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                </div>
+            </div>
+        </li>
+    </template>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/shopping.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
+    <script src="~/js/shopping.js" asp-append-version="true"></script>
+}

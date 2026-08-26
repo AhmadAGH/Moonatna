@@ -1,0 +1,46 @@
+@model OnboardingViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Family.Onboarding.Title");
+}
+
+<section class="onboarding rise">
+    <header class="onboarding-header">
+        <div class="lottie-mount lottie-hero" data-lottie="float"></div>
+        <h1>@L.T("Family.Onboarding.Title")</h1>
+        <p>@L.T("Family.Onboarding.Subtitle")</p>
+    </header>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorKey))
+    {
+        <div class="alert-error" role="alert">@L.T(Model.ErrorKey)</div>
+    }
+
+    <div class="onboarding-cards">
+        <div class="card">
+            <h2>@L.T("Family.Create.Title")</h2>
+            <form asp-controller="Family" asp-action="CreateFamily" method="post">
+                <input asp-for="CreateName" class="input" placeholder="@L.T("Family.Create.NamePlaceholder")" autocomplete="off" />
+                <button type="submit" class="btn-primary">@L.T("Family.Create.Button")</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>@L.T("Family.Join.Title")</h2>
+            <form asp-controller="Family" asp-action="Join" method="post">
+                <input asp-for="JoinCode" class="input" placeholder="@L.T("Family.Join.CodePlaceholder")" autocomplete="off" dir="ltr" />
+                <button type="submit" class="btn-primary">@L.T("Family.Join.Button")</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
+    <script src="~/js/onboarding.js" asp-append-version="true"></script>
+}

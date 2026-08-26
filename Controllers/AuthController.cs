@@ -1,23 +1,40 @@
+using System.Security.Claims;
 using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Moonatna.Services.Users;
 using Moonatna.ViewModels.Auth;
-using System.Security.Claims;
 
 namespace Moonatna.Controllers;
 
 public class AuthController : Controller
 {
     private readonly IUsersService _users;
+    private readonly IConfiguration _config;
 
-    public AuthController(IUsersService users) => _users = users;
+    public AuthController(IUsersService users, IConfiguration config)
+    {
+        _users = users;
+        _config = config;
+    }
 
     [HttpGet]
-    public IActionResult Login() => View();
+    public IActionResult Login()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Pantry");
 
-    // The Vue login page signs in with Google via Firebase JS, then posts the ID token here.
+        var vm = new LoginViewModel
+        {
+            FirebaseApiKey = _config["Firebase:ApiKey"] ?? string.Empty,
+            FirebaseAuthDomain = _config["Firebase:AuthDomain"] ?? string.Empty,
+            FirebaseProjectId = _config["Firebase:ProjectId"] ?? string.Empty
+        };
+        return View(vm);
+    }
+
+    // The login page signs in with Google via Firebase JS, then posts the ID token here.
     [HttpPost]
     public async Task<IActionResult> Token([FromBody] AuthTokenViewModel vm)
     {
@@ -28,7 +45,7 @@ public class AuthController : Controller
         }
         catch (FirebaseAuthException)
         {
-            return Unauthorized();
+            return Unauthorized(new { error = "Invalid Firebase ID token." });
         }
 
         var name = decoded.Claims.TryGetValue("name", out var n) ? n?.ToString() ?? "User" : "User";
