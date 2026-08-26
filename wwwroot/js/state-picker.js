@@ -1,4 +1,4 @@
-// Long-press radial state picker — موجود / ناقص / خلص.
+// Long-press radial state picker — موجود / ناقص / خلص (pantry only).
 // Press and hold an item row (~380ms): options fan out in an arc above the finger.
 // Slide onto one and release — or release and tap an option. Tap the backdrop to dismiss.
 // NOTE: data-label-0/1/2 must be read via getAttribute — dataset camelCasing
@@ -28,7 +28,6 @@
 
     container.addEventListener("pointerdown", (e) => {
         if (picker) return;
-        if (e.target.closest(".purchase-btn")) return;
         const row = e.target.closest(".item-row");
         if (!row) return;
 
@@ -176,6 +175,9 @@
         chip.animate(
             [{ transform: "scale(1.3)" }, { transform: "scale(1)" }],
             { duration: 220, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" });
+
+        const rect = chip.getBoundingClientRect();
+        window.MoonatnaLottie?.burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
 
         container.dispatchEvent(new CustomEvent("itemstatechanged", {
             detail: { itemId, state: value, row }

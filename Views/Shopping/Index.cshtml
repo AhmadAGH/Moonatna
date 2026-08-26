@@ -9,14 +9,7 @@
         .ThenBy(g => g.Key);
 }
 
-<section class="items-page rise"
-         data-state-picker
-         data-set-state-url="@Url.Action("SetState", "Items")"
-         data-purchase-url="@Url.Action("Purchase", "Items")"
-         data-label-0="@L.T("ItemState.Available")"
-         data-label-1="@L.T("ItemState.RunningLow")"
-         data-label-2="@L.T("ItemState.OutOfStock")"
-         data-uncategorized="@L.T("Common.Uncategorized")">
+<section class="items-page rise" data-purchase-url="@Url.Action("Purchase", "Items")">
 
     <header class="page-header">
         <h1>@L.T("Shopping.Title")</h1>
@@ -40,11 +33,14 @@
                 <ul>
                     @foreach (var item in group)
                     {
-                        <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
-                            <span class="item-name">@item.Name</span>
-                            <div class="row-actions">
-                                <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
-                                <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                        <li class="swipe-wrap">
+                            <div class="swipe-under"><span>✓ @L.T("ItemState.Available")</span></div>
+                            <div class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                                <span class="item-name">@item.Name</span>
+                                <div class="row-actions">
+                                    <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
+                                    <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                                </div>
                             </div>
                         </li>
                     }
@@ -55,12 +51,10 @@
 </section>
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/state-picker.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/shopping.css" asp-append-version="true" />
 }
 
 @section Scripts {
     <script src="~/js/lottie.js" asp-append-version="true"></script>
-    <script src="~/js/state-picker.js" asp-append-version="true"></script>
     <script src="~/js/shopping.js" asp-append-version="true"></script>
 }

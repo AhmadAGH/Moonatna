@@ -1,5 +1,36 @@
-/* Shopping page — shared item-list styles live in layout.css. */
+/* Shopping page — swipe-to-restock rows. Shared list styles live in layout.css. */
 
 .page-header .btn-secondary {
     white-space: nowrap;
+}
+
+.swipe-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+}
+
+.swipe-wrap + .swipe-wrap {
+    border-top: 1px solid var(--border);
+}
+
+.swipe-under {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-inline: 1.1rem;
+    background-color: var(--green);
+    color: #ffffff;
+    font-weight: 700;
+    opacity: 0;
+}
+
+.swipe-wrap .item-row {
+    background-color: var(--surface);
+}
+
+.swipe-wrap .item-row:hover {
+    background-color: var(--surface-2);
 }
