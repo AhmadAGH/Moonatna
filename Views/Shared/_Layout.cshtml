@@ -7,8 +7,15 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>@ViewData["Title"] - @L.T("App.Name")</title>
+    <link rel="manifest" href="~/manifest.webmanifest" />
+    <meta name="theme-color" content="#0d7377" />
+    <link rel="icon" type="image/png" href="~/img/logo.png" />
+    <link rel="apple-touch-icon" href="~/img/logo.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="موناتنا" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" />
@@ -41,6 +48,7 @@
         @RenderBody()
     </main>
 
+    <script src="~/js/register.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
