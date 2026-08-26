@@ -1,0 +1,31 @@
+@model LoginViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Login.Title");
+}
+
+<section class="login-page">
+    <div class="login-card"
+         id="login-root"
+         data-api-key="@Model.FirebaseApiKey"
+         data-auth-domain="@Model.FirebaseAuthDomain"
+         data-project-id="@Model.FirebaseProjectId"
+         data-token-url="@Url.Action("Token", "Auth")"
+         data-error-text="@L.T("Login.Error")">
+        <h1 class="login-title">@L.T("Login.Title")</h1>
+        <p class="login-subtitle">@L.T("Login.Subtitle")</p>
+        <button type="button" id="google-signin" class="btn-primary login-button">
+            @L.T("Login.SignInWithGoogle")
+        </button>
+        <p id="login-error" class="login-error" hidden></p>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script type="module" src="~/js/login.js" asp-append-version="true"></script>
+}

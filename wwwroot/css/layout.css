@@ -1,0 +1,134 @@
+:root {
+    --bg: #faf9f7;
+    --surface: #ffffff;
+    --text: #1f2933;
+    --muted: #6b7280;
+    --primary: #0f766e;
+    --primary-hover: #115e59;
+    --border: #e5e7eb;
+    --radius: 0.75rem;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, system-ui, -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.main-nav {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    flex: 1;
+}
+
+.main-nav a {
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+    white-space: nowrap;
+    font-size: 0.95rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.main-nav a:hover {
+    color: var(--text);
+    background-color: var(--bg);
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius);
+}
+
+.link-button:hover {
+    color: var(--text);
+    background-color: var(--bg);
+}
+
+.page {
+    flex: 1;
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.7rem 1.5rem;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .topbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .main-nav {
+        order: 3;
+        flex-basis: 100%;
+    }
+}
