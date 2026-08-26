@@ -59,19 +59,84 @@ a.btn-primary {
 }
 
 /* ---------- details ---------- */
-.missing-card {
-    margin-bottom: 1.25rem;
-    border-color: #f0d9b5;
-    background-color: var(--amber-soft);
+.recipe-details-header {
+    align-items: flex-start;
 }
 
-.missing-card h2 {
-    color: var(--amber);
+.overflow-menu {
+    position: relative;
+}
+
+.menu-trigger {
+    border: 1px solid var(--border);
+    background-color: var(--surface);
+    border-radius: var(--radius-full);
+    width: 2.4rem;
+    height: 2.4rem;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color 0.15s, background-color 0.15s;
+}
+
+.menu-trigger:hover {
+    color: var(--text);
+    background-color: var(--surface-2);
+}
+
+.menu-pop {
+    position: absolute;
+    top: 110%;
+    inset-inline-end: 0;
+    z-index: 60;
+    min-width: 9rem;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    padding: 0.35rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-pop a,
+.menu-pop button {
+    display: block;
+    width: 100%;
+    text-align: start;
+    padding: 0.55rem 0.8rem;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 0.92rem;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.menu-pop a:hover,
+.menu-pop button:hover {
+    background-color: var(--surface-2);
+}
+
+.menu-pop .menu-danger {
+    color: var(--red);
+}
+
+.missing-bar {
+    margin-bottom: 1rem;
+}
+
+.missing-bar form {
+    margin: 0;
 }
 
 .ingredients-list {
     list-style: none;
-    margin: 0 0 1.25rem;
+    margin: 0;
     padding: 0;
 }
 
@@ -79,12 +144,17 @@ a.btn-primary {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.6rem 0;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-sm);
     border-bottom: 1px solid var(--border);
 }
 
 .ingredient-row:last-child {
     border-bottom: none;
+}
+
+.ingredient-row.is-missing {
+    background-color: var(--amber-soft);
 }
 
 .ingredient-name {
@@ -120,6 +190,75 @@ a.btn-primary {
 .avail-chip.miss {
     background-color: var(--red-soft);
     color: var(--red);
+}
+
+/* ---------- delete modal ---------- */
+.modal-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    background-color: rgba(35, 33, 28, 0.4);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal {
+    background-color: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    max-width: 24rem;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    animation: rise 0.3s var(--ease-out) both;
+}
+
+.modal h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.15rem;
+}
+
+.modal p {
+    margin: 0 0 1.4rem;
+    color: var(--muted);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+}
+
+.modal-actions form {
+    margin: 0;
+}
+
+.btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--red);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 0.6rem 1.3rem;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s, transform 0.12s;
+}
+
+.btn-danger:hover {
+    background-color: #922b23;
+    transform: translateY(-1px);
+}
+
+.btn-danger:active {
+    transform: scale(0.97);
 }
 
 /* ---------- builder ---------- */
