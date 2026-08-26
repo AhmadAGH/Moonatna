@@ -1,5 +1,3 @@
-using System.Globalization;
-using System.Reflection;
 using DbUp;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
@@ -14,9 +12,12 @@ using Moonatna.Repositories.SqlConnectionFactory;
 using Moonatna.Repositories.Users;
 using Moonatna.Services.Families;
 using Moonatna.Services.Items;
+using Moonatna.Services.Localization;
 using Moonatna.Services.Recipes;
 using Moonatna.Services.Users;
 using Serilog;
+using System.Globalization;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,7 @@ builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IFamiliesService, FamiliesService>();
 builder.Services.AddScoped<IItemsService, ItemsService>();
 builder.Services.AddScoped<IRecipesService, RecipesService>();
+builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 
 var app = builder.Build();
 
