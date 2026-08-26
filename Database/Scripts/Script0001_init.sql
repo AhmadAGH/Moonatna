@@ -1,11 +1,11 @@
 -- =====================================================
--- Mounatna (codename) - Initial Schema - FINAL DRAFT
+-- Moonatna (codename) - Initial Schema - FINAL DRAFT
 -- SQL Server / T-SQL
 -- Includes: unified Items (ad-hoc), AutoPromoteAdHoc,
 -- FA icon classes, no ShoppingListItems table
 -- =====================================================
 
-USE MounatnaDb;
+USE MoonatnaDb;
 GO
 
 CREATE SCHEMA [Lookup];
