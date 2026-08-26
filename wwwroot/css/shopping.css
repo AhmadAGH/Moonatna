@@ -1,4 +1,4 @@
-/* Shopping page — swipe-to-restock rows. Shared list styles live in layout.css. */
+/* Shopping page — swipe rows + quick add. Shared list styles live in layout.css. */
 
 .page-header .btn-secondary {
     white-space: nowrap;
@@ -23,7 +23,7 @@
     pointer-events: none;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start; /* RTL: the ✓ label anchors to the start side */
     padding-inline: 1.1rem;
     background-color: var(--green);
     color: #ffffff;
@@ -39,4 +39,24 @@
 
 .swipe-wrap .item-row:hover {
     background-color: var(--surface-2);
+}
+
+.adhoc-tag {
+    display: inline-block;
+    margin-inline-start: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--amber);
+    background-color: var(--amber-soft);
+    border-radius: var(--radius-full);
+    padding: 0.08rem 0.55rem;
+    vertical-align: middle;
+}
+
+@media (max-width: 640px) {
+    .add-form {
+        max-width: none;
+        width: 100%;
+        order: 3;
+    }
 }

@@ -1,0 +1,98 @@
+/* Organize — drag-to-category board. Shared tokens in layout.css. */
+
+.organize-hint {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0;
+    flex-basis: 100%;
+}
+
+.organize-board {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.category-zone {
+    background-color: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem 1rem;
+    transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
+}
+
+.category-zone.drop-target {
+    border-color: var(--primary);
+    background-color: var(--primary-soft);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.zone-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+}
+
+.zone-header i {
+    color: var(--primary);
+    width: 1.2rem;
+    text-align: center;
+}
+
+.zone-count {
+    margin-inline-start: auto;
+    background-color: var(--surface-2);
+    color: var(--muted);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.1rem 0.6rem;
+}
+
+.zone-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    min-height: 2.2rem;
+}
+
+.org-chip {
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 0.32rem 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    transition: transform 0.15s var(--ease-spring), box-shadow 0.15s;
+}
+
+.org-chip:active {
+    cursor: grabbing;
+}
+
+.org-chip.dragging {
+    opacity: 0.35;
+}
+
+.org-chip.drag-ghost {
+    position: fixed;
+    z-index: 320;
+    pointer-events: none;
+    box-shadow: var(--shadow-lg);
+    transform: scale(1.08);
+    opacity: 1;
+}
+
+.zone-uncat {
+    border-style: dashed;
+}
+
+.zone-uncat .zone-header i {
+    color: var(--muted);
+}

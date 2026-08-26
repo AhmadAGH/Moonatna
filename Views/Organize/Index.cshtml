@@ -1,0 +1,64 @@
+@model OrganizeIndexViewModel
+@inject ILocalizationService Localization
+@{
+    var L = await Localization.GetStringsAsync();
+    ViewData["Title"] = L.T("Organize.Title");
+
+    var uncategorized = Model.Items.Where(i => i.CategoryId is null).OrderBy(i => i.Name).ToList();
+    var byCategory = Model.Items.Where(i => i.CategoryId is not null)
+        .GroupBy(i => i.CategoryId!.Value)
+        .ToDictionary(g => g.Key, g => g.OrderBy(i => i.Name).ToList());
+}
+
+<section class="organize-page rise" data-set-category-url="@Url.Action("SetCategory", "Items")">
+
+    <header class="page-header">
+        <h1>@L.T("Organize.Title")</h1>
+        <p class="organize-hint">@L.T("Organize.Hint")</p>
+    </header>
+
+    <div class="organize-board">
+        @foreach (var cat in Model.Categories.OrderBy(c => c.SortOrder))
+        {
+            <div class="category-zone" data-category-id="@cat.Id">
+                <header class="zone-header">
+                    <i class="@cat.IconClass"></i>
+                    <span>@(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" ? cat.NameAr : cat.NameEn)</span>
+                    <span class="zone-count">@(byCategory.TryGetValue(cat.Id, out var list) ? list.Count : 0)</span>
+                </header>
+                <div class="zone-items" data-zone="@cat.Id">
+                    @if (byCategory.TryGetValue(cat.Id, out var items))
+                    {
+                        foreach (var item in items)
+                        {
+                            <span class="org-chip" data-item-id="@item.Id" data-category-id="@cat.Id">@item.Name</span>
+                        }
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="category-zone zone-uncat" data-category-id="">
+            <header class="zone-header">
+                <i class="fa-solid fa-inbox"></i>
+                <span>@L.T("Common.Uncategorized")</span>
+                <span class="zone-count">@uncategorized.Count</span>
+            </header>
+            <div class="zone-items" data-zone="">
+                @foreach (var item in uncategorized)
+                {
+                    <span class="org-chip" data-item-id="@item.Id" data-category-id="">@item.Name</span>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/organize.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/organize.js" asp-append-version="true"></script>
+}

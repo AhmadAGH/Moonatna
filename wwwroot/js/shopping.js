@@ -2,13 +2,66 @@ const section = document.querySelector(".items-page");
 const list = document.getElementById("items-list");
 const copyBtn = document.getElementById("copy-list");
 const emptyState = document.getElementById("empty-state");
+const addForm = document.getElementById("add-item-form");
+const nameInput = document.getElementById("add-item-name");
+const rowTemplate = document.getElementById("item-row-template");
 
 const SWIPE_TRIGGER = 88;
 let drag = null;
 
-// نسخ القائمة — item names only, one per line, in display order.
+// Quick add — ad-hoc one-off, created as خلص so it lands straight on this list.
+addForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    if (!name) return;
+
+    const response = await fetch(addForm.dataset.addUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, isAdHoc: true, categoryId: null })
+    });
+    if (!response.ok) return;
+
+    const item = await response.json();
+    appendRow(item);
+    nameInput.value = "";
+    nameInput.focus();
+    emptyState.hidden = true;
+    copyBtn.hidden = false;
+});
+
+function appendRow(item) {
+    const wrap = rowTemplate.content.firstElementChild.cloneNode(true);
+    const row = wrap.querySelector(".item-row");
+    row.dataset.itemId = item.id;
+    wrap.querySelector(".item-name-text").textContent = item.name;
+
+    getUncategorizedGroup().querySelector("ul").appendChild(wrap);
+    wrap.animate(
+        [{ opacity: 0, transform: "translateY(8px) scale(0.98)" }, { opacity: 1, transform: "none" }],
+        { duration: 280, easing: "cubic-bezier(0.34, 1.56, 0.64, 1)" });
+}
+
+function getUncategorizedGroup() {
+    let group = list.querySelector('[data-category-group=""]');
+    if (!group) {
+        group = document.createElement("section");
+        group.className = "category-group";
+        group.dataset.categoryGroup = "";
+
+        const heading = document.createElement("h2");
+        heading.textContent = section.dataset.uncategorized;
+
+        group.appendChild(heading);
+        group.appendChild(document.createElement("ul"));
+        list.appendChild(group);
+    }
+    return group;
+}
+
+// نسخ القائمة — item names only (never the مؤقت tag), one per line, in display order.
 copyBtn.addEventListener("click", async () => {
-    const names = [...list.querySelectorAll(".item-name")].map((el) => el.textContent.trim());
+    const names = [...list.querySelectorAll(".item-name-text")].map((el) => el.textContent.trim());
     await navigator.clipboard.writeText(names.join("\n"));
 
     const original = copyBtn.textContent;
@@ -23,7 +76,7 @@ list.addEventListener("click", (e) => {
     purchaseRow(purchaseBtn.closest(".swipe-wrap"));
 });
 
-// ---- swipe to restock (موجود) — drag leftward, release past the threshold ----
+// ---- swipe to restock — drag leftward, release past the threshold ----
 list.addEventListener("pointerdown", (e) => {
     if (e.target.closest(".purchase-btn")) return;
     const row = e.target.closest(".item-row");
@@ -85,7 +138,7 @@ function under(row) {
 }
 
 // Purchase routes through the 4-outcome logic server-side: staples become
-// Available, ad-hoc items promote or archive. All outcomes leave the list.
+// موجود, ad-hoc items promote or archive. All outcomes leave the list.
 async function purchaseRow(wrap) {
     const row = wrap.querySelector(".item-row");
     const rect = wrap.getBoundingClientRect();

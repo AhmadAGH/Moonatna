@@ -15,6 +15,7 @@
     <EmbeddedResource Include="Database\Scripts\Script0006_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0007_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0008_badgeLabels.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0009_localizations.sql" />
   </ItemGroup>
 
   <ItemGroup>
