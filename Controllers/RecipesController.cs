@@ -145,8 +145,8 @@ public class RecipesController : BaseController
         });
     }
 
-    // Replace-style update: name + full ingredient set. Item links are kept;
-    // renaming an ingredient renames the family's Item, it never creates a new one.
+    // Replace-style update: name + full ingredient set. Untouched rows keep their
+    // Item link; renamed rows re-link by name (existing item) or create a new one.
     [HttpPost]
     public async Task<IActionResult> Edit([FromBody] RecipeEditViewModel vm)
     {
@@ -195,7 +195,7 @@ public class RecipesController : BaseController
         var family = await ResolveActiveFamilyAsync(_families);
         if (family is null) return BadRequest();
 
-        var ok = await _recipes.RemoveIngredientAsync(vm.IngredientId, family.Id);
+        var ok = await _recipes.RemoveIngredientAsync(vm.RecipeId, vm.IngredientId, family.Id);
         return ok ? Ok() : NotFound();
     }
 }

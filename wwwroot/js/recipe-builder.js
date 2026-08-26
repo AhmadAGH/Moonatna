@@ -47,7 +47,7 @@ async function onRemove(row) {
             const response = await fetch(removeUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ingredientId })
+                body: JSON.stringify({ recipeId, ingredientId })
             });
             if (!response.ok) {
                 errorEl.textContent = root.dataset.errorText;
