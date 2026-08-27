@@ -2,6 +2,10 @@
 @{
     var L = await Localization.GetStringsAsync();
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    var userName = User.Identity?.Name;
+    var initial = !string.IsNullOrWhiteSpace(userName) ? userName.Trim()[0].ToString().ToUpper() : "?";
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string Active(string c) => string.Equals(ctrl, c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -13,13 +17,11 @@
     <meta name="theme-color" content="#0d7377" />
     <link rel="icon" type="image/png" href="~/img/logo.png" />
     <link rel="apple-touch-icon" href="~/img/logo.png" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="موناتنا" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
@@ -27,20 +29,27 @@
         @if (isAuthenticated)
         {
             <a class="brand" asp-controller="Pantry" asp-action="Index">@L.T("App.Name")</a>
-            <nav class="main-nav">
-                <a asp-controller="Pantry" asp-action="Index">@L.T("Nav.Pantry")</a>
-                <a asp-controller="Shopping" asp-action="Index">@L.T("Nav.Shopping")</a>
-                <a asp-controller="Recipes" asp-action="Index">@L.T("Nav.Recipes")</a>
-                <a asp-controller="Organize" asp-action="Index">@L.T("Nav.Organize")</a>
-                <a asp-controller="Family" asp-action="Settings">@L.T("Nav.Family")</a>
+            <nav class="top-nav" aria-label="@L.T("Nav.Main")">
+                <a class="@Active("Pantry")" asp-controller="Pantry" asp-action="Index">@L.T("Nav.Pantry")</a>
+                <a class="@Active("Shopping")" asp-controller="Shopping" asp-action="Index">@L.T("Nav.Shopping")</a>
+                <a class="@Active("Recipes")" asp-controller="Recipes" asp-action="Index">@L.T("Nav.Recipes")</a>
+                <a class="@Active("Organize")" asp-controller="Organize" asp-action="Index">@L.T("Nav.Organize")</a>
             </nav>
-            <form asp-controller="Auth" asp-action="Logout" method="post" class="logout-form">
-                <button type="submit" class="link-button">@L.T("Nav.Logout")</button>
-            </form>
-        }
-        else
-        {
-            <span class="brand">@L.T("App.Name")</span>
+            <div class="avatar-wrap">
+                <button type="button" class="avatar-btn" id="avatarBtn" aria-haspopup="true" aria-expanded="false">@initial</button>
+                <div class="avatar-menu" id="avatarMenu">
+                    <a asp-controller="Family" asp-action="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                        <span>@L.T("Nav.Family")</span>
+                    </a>
+                    <form asp-controller="Auth" asp-action="Logout" method="post" class="logout-form">
+                        <button type="submit" class="danger">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                            <span>@L.T("Nav.Logout")</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
         }
     </header>
 
@@ -48,7 +57,93 @@
         @RenderBody()
     </main>
 
+    @if (isAuthenticated)
+    {
+        <div class="page-bottom-space" aria-hidden="true"></div>
+        <div class="nav-scrim" id="navScrim"></div>
+
+        <nav class="nav-dock" id="navDock" aria-label="@L.T("Nav.Main")">
+            <div class="nav-bar">
+                <div class="nav-side">
+                    <a class="nav-item @Active("Pantry")" asp-controller="Pantry" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg>
+                        <span>@L.T("Nav.Pantry")</span>
+                    </a>
+                    <a class="nav-item @Active("Shopping")" asp-controller="Shopping" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1.6"/><circle cx="19" cy="21" r="1.6"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 7H6"/></svg>
+                        <span>@L.T("Nav.Shopping")</span>
+                    </a>
+                </div>
+                <div class="nav-gap"></div>
+                <div class="nav-side">
+                    <a class="nav-item @Active("Recipes")" asp-controller="Recipes" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                        <span>@L.T("Nav.Recipes")</span>
+                    </a>
+                    <a class="nav-item @Active("Organize")" asp-controller="Organize" asp-action="Index">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2.2" fill="#fff"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2.2" fill="#fff"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="7" cy="18" r="2.2" fill="#fff"/></svg>
+                        <span>@L.T("Nav.Organize")</span>
+                    </a>
+                </div>
+            </div>
+
+            <button type="button" class="nav-sat sat-1" data-mode="quick">
+                <span class="sat-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg></span>
+                <span class="sat-lbl">@L.T("QuickAdd.Quick")</span>
+            </button>
+            <button type="button" class="nav-sat sat-2" data-mode="adhoc">
+                <span class="sat-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.6 13.4L11 3.8A2 2 0 0 0 9.6 3H4a1 1 0 0 0-1 1v5.6c0 .5.2 1 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.6z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg></span>
+                <span class="sat-lbl">@L.T("QuickAdd.AdHoc")</span>
+            </button>
+            <button type="button" class="nav-sat sat-3" data-mode="full">
+                <span class="sat-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+                <span class="sat-lbl">@L.T("QuickAdd.Full")</span>
+            </button>
+
+            <div class="fab-wrap">
+                <button type="button" class="nav-fab" id="navFab" aria-expanded="false" aria-label="@L.T("Nav.Add")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+            </div>
+        </nav>
+
+        <div class="add-dialog" id="addDialog" role="dialog" aria-modal="true"
+             data-title-quick="@L.T("QuickAdd.Title.Quick")"
+             data-title-adhoc="@L.T("QuickAdd.Title.AdHoc")"
+             data-title-full="@L.T("QuickAdd.Title.Full")">
+            <div class="add-dialog-head">
+                <span class="add-dialog-title">
+                    <span id="addDialogTitle">@L.T("QuickAdd.Title.Quick")</span>
+                    <span class="tag-adhoc hidden" id="adhocTag">@L.T("QuickAdd.AdHoc")</span>
+                </span>
+                <button type="button" class="add-dialog-close" id="addDialogClose" aria-label="✕">✕</button>
+            </div>
+            <form id="addItemForm">
+                <div class="add-field">
+                    <input type="text" id="addNameInput" placeholder="@L.T("QuickAdd.NamePlaceholder")" autocomplete="off" />
+                </div>
+                <div class="add-field hidden" id="addCatsField">
+                    @* Category chips render here from LookupsRepository in the backend pass *@
+                    <div class="add-cats" id="addCats"></div>
+                </div>
+                <div class="add-field hidden" id="addPhotoField">
+                    <button type="button" class="add-photo-btn" id="addPhotoBtn">
+                        <span id="addPhotoContent" data-label="@L.T("QuickAdd.Photo")">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>@L.T("QuickAdd.Photo")</span>
+                        </span>
+                    </button>
+                    <input type="file" id="addPhotoInput" accept="image/*" capture="environment" class="hidden" />
+                </div>
+                <button type="submit" class="add-submit">@L.T("QuickAdd.Submit")</button>
+            </form>
+        </div>
+
+        <div class="add-toast" id="addToast" data-text="@L.T("QuickAdd.UiOnly")" role="status"></div>
+    }
+
     <script src="~/js/register.js" asp-append-version="true"></script>
+    <script src="~/js/nav.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
