@@ -26,8 +26,18 @@
     .top-nav { display: flex; }
 }
 
+/* ---------- topbar adjustments for the new header ---------- */
+/* layout.css wraps the topbar on small screens for the old .main-nav;
+   the new header is brand + avatar only, so never wrap. */
+@media (max-width: 640px) {
+    .topbar { flex-wrap: nowrap; }
+}
+
 /* ---------- avatar button + menu (all viewports) ---------- */
-.avatar-wrap { position: relative; }
+.avatar-wrap {
+    position: relative;
+    margin-inline-start: auto;
+}
 
 .avatar-btn {
     width: 38px;
@@ -46,10 +56,12 @@
 }
 .avatar-btn svg { width: 18px; height: 18px; }
 
+/* menu lives at body level and is position:fixed so the topbar's
+   backdrop-filter stacking context can never clip or bury it */
 .avatar-menu {
-    position: absolute;
-    top: calc(100% + 8px);
-    inset-inline-end: 0;
+    position: fixed;
+    top: 68px;
+    inset-inline-end: 12px;
     min-width: 200px;
     background: #fff;
     border-radius: 16px;

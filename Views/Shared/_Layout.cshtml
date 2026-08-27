@@ -37,18 +37,6 @@
             </nav>
             <div class="avatar-wrap">
                 <button type="button" class="avatar-btn" id="avatarBtn" aria-haspopup="true" aria-expanded="false">@initial</button>
-                <div class="avatar-menu" id="avatarMenu">
-                    <a asp-controller="Family" asp-action="Settings">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
-                        <span>@L.T("Nav.Family")</span>
-                    </a>
-                    <form asp-controller="Auth" asp-action="Logout" method="post" class="logout-form">
-                        <button type="submit" class="danger">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-                            <span>@L.T("Nav.Logout")</span>
-                        </button>
-                    </form>
-                </div>
             </div>
         }
     </header>
@@ -59,6 +47,19 @@
 
     @if (isAuthenticated)
     {
+        <div class="avatar-menu" id="avatarMenu">
+            <a asp-controller="Family" asp-action="Settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                <span>@L.T("Nav.Family")</span>
+            </a>
+            <form asp-controller="Auth" asp-action="Logout" method="post" class="logout-form">
+                <button type="submit" class="danger">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                    <span>@L.T("Nav.Logout")</span>
+                </button>
+            </form>
+        </div>
+
         <div class="page-bottom-space" aria-hidden="true"></div>
         <div class="nav-scrim" id="navScrim"></div>
 
