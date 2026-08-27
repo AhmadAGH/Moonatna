@@ -7,9 +7,9 @@ const rowTemplate = document.getElementById("item-row-template");
 const SWIPE_TRIGGER = 88;
 let drag = null;
 
-// Adding items now lives in the global quick-add dialog (nav dock). When the
-// backend wiring lands, nav.js dispatches "moonatna:item-added" after a
-// successful POST; each page inserts its own row so it owns how rows render.
+// Adding items now lives in the global quick-add dialog (nav dock). nav.js
+// dispatches "moonatna:item-added" after a successful save; each page inserts
+// its own row so it owns how rows render.
 document.addEventListener("moonatna:item-added", (e) => {
     const item = e.detail;
     if (!item || item.state === 0) return; // shopping list shows ناقص/خلص only
@@ -24,6 +24,9 @@ function appendRow(item) {
     const row = wrap.querySelector(".item-row");
     row.dataset.itemId = item.id;
     wrap.querySelector(".item-name-text").textContent = item.name;
+
+    const thumb = wrap.querySelector(".item-thumb");
+    if (thumb && item.imagePath) { thumb.src = item.imagePath; thumb.hidden = false; }
 
     getUncategorizedGroup().querySelector("ul").appendChild(wrap);
     wrap.animate(

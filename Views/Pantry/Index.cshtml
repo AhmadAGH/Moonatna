@@ -35,6 +35,10 @@
                     @foreach (var item in group)
                     {
                         <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
+                            }
                             <span class="item-name">@item.Name</span>
                             <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
                         </li>
@@ -46,6 +50,7 @@
 
     <template id="item-row-template">
         <li class="item-row" data-item-id="0" data-state="0">
+            <img class="item-thumb" alt="" loading="lazy" hidden />
             <span class="item-name"></span>
             <span class="state-chip state-0"></span>
         </li>

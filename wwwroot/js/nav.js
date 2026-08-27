@@ -1,5 +1,6 @@
-// Nav dock interactions — FAB fan, add dialog (UI-only for now), avatar menu, toast.
-// TODO(backend): wire form submit to POST /Items/Add and the photo upload endpoint.
+// Nav dock interactions — FAB fan, add dialog, avatar menu, toast.
+// Submit: POST /Items/Add (JSON), optional photo upload, then broadcast
+// "moonatna:item-added" so the current page inserts its own row.
 (function () {
     "use strict";
 
@@ -20,12 +21,15 @@
     var nameInput = document.getElementById("addNameInput");
     var form = document.getElementById("addItemForm");
     var toast = document.getElementById("addToast");
+    var submitBtn = form ? form.querySelector(".add-submit") : null;
 
     var titles = {
         quick: dialog.dataset.titleQuick || "",
         adhoc: dialog.dataset.titleAdhoc || "",
         full: dialog.dataset.titleFull || ""
     };
+    var addedText = dialog.dataset.addedText || "✓";
+    var errorText = dialog.dataset.errorText || "✕";
 
     var toastTimer = null;
 
@@ -45,7 +49,6 @@
         titleEl.textContent = titles[mode] || titles.quick;
         adhocTag.classList.toggle("hidden", mode !== "adhoc");
         photoField.classList.toggle("hidden", mode === "quick");
-        // category chips are server-rendered from lookups later; hide when empty
         var hasCats = catsBox && catsBox.children.length > 0;
         catsField.classList.toggle("hidden", mode !== "full" || !hasCats);
         resetPhoto();
@@ -102,7 +105,7 @@
         if (menu) menu.classList.remove("open");
     });
 
-    // photo: local preview only — upload ships with the backend pass
+    // photo: local preview; the upload itself happens after the item is created
     if (photoBtn && photoInput) {
         photoBtn.addEventListener("click", function () { photoInput.click(); });
         photoInput.addEventListener("change", function () {
@@ -119,25 +122,62 @@
         });
     }
 
-    // category chip single-select (chips arrive from server later)
+    // category chip single-select — tapping the selected chip clears it (optional field)
     if (catsBox) {
         catsBox.addEventListener("click", function (e) {
             var chip = e.target.closest(".add-cat");
             if (!chip) return;
+            var wasSelected = chip.classList.contains("sel");
             catsBox.querySelectorAll(".add-cat").forEach(function (c) { c.classList.remove("sel"); });
-            chip.classList.add("sel");
+            if (!wasSelected) chip.classList.add("sel");
         });
     }
 
-    // submit: UI-only toast until backend wiring lands
+    // submit: save the item, then the photo (best-effort), then tell the page
     if (form) {
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", async function (e) {
             e.preventDefault();
-            // TODO(backend): fetch POST /Items/Add { name, isAdHoc, categoryId } + photo upload
-            closeDialog();
-            form.reset();
-            resetPhoto();
-            showToast(toast && toast.dataset.text ? toast.dataset.text : "✓");
+            var name = nameInput.value.trim();
+            if (!name) { nameInput.focus(); return; }
+
+            var mode = dialog.dataset.mode || "quick";
+            var selChip = catsBox ? catsBox.querySelector(".add-cat.sel") : null;
+            var categoryId = mode === "full" && selChip ? Number(selChip.dataset.categoryId) : null;
+
+            if (submitBtn) submitBtn.disabled = true;
+            try {
+                var res = await fetch(dialog.dataset.addUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: name, isAdHoc: mode === "adhoc", categoryId: categoryId })
+                });
+                if (!res.ok) throw new Error("add failed");
+                var item = await res.json();
+
+                var file = photoInput && photoInput.files && photoInput.files[0];
+                if (file) {
+                    try {
+                        var fd = new FormData();
+                        fd.append("ItemId", String(item.id));
+                        fd.append("Photo", file);
+                        var up = await fetch(dialog.dataset.uploadUrl, { method: "POST", body: fd });
+                        if (up.ok) {
+                            var u = await up.json();
+                            if (u && u.imagePath) item.imagePath = u.imagePath;
+                        }
+                    } catch (uploadErr) { /* photo is best-effort — the item itself is saved */ }
+                }
+
+                document.dispatchEvent(new CustomEvent("moonatna:item-added", { detail: item }));
+                closeDialog();
+                form.reset();
+                resetPhoto();
+                showToast(addedText);
+            } catch (err) {
+                showToast(errorText);
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
         });
     }
 

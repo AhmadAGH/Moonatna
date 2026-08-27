@@ -38,6 +38,10 @@
                         <li class="swipe-wrap">
                             <div class="swipe-under"><span>✓ @L.T("Shopping.Purchased")</span></div>
                             <div class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                {
+                                    <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
+                                }
                                 <span class="item-name">
                                     <span class="item-name-text">@item.Name</span>
                                     @if (item.IsAdHoc)
@@ -61,6 +65,7 @@
         <li class="swipe-wrap">
             <div class="swipe-under"><span>✓ @L.T("Shopping.Purchased")</span></div>
             <div class="item-row" data-item-id="0" data-state="2">
+                <img class="item-thumb" alt="" loading="lazy" hidden />
                 <span class="item-name">
                     <span class="item-name-text"></span>
                     <span class="adhoc-tag">@L.T("Item.AdHoc")</span>

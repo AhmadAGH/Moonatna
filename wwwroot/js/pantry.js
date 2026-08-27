@@ -5,9 +5,9 @@ const rowTemplate = document.getElementById("item-row-template");
 // data-label-N is read via getAttribute: dataset does not camelCase dash-digit keys.
 const stateLabels = [0, 1, 2].map((v) => container.getAttribute(`data-label-${v}`));
 
-// Adding items now lives in the global quick-add dialog (nav dock). When the
-// backend wiring lands, nav.js dispatches "moonatna:item-added" after a
-// successful POST; each page inserts its own row so it owns how rows render.
+// Adding items now lives in the global quick-add dialog (nav dock). nav.js
+// dispatches "moonatna:item-added" after a successful save; each page inserts
+// its own row so it owns how rows render.
 document.addEventListener("moonatna:item-added", (e) => {
     const item = e.detail;
     if (!item || item.isAdHoc === true) return; // pantry shows tracked items only
@@ -21,6 +21,9 @@ function appendRow(item) {
     row.dataset.itemId = item.id;
     row.dataset.state = item.state;
     row.querySelector(".item-name").textContent = item.name;
+
+    const thumb = row.querySelector(".item-thumb");
+    if (thumb && item.imagePath) { thumb.src = item.imagePath; thumb.hidden = false; }
 
     const chip = row.querySelector(".state-chip");
     chip.className = `state-chip state-${item.state}`;
