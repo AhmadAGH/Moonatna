@@ -15,10 +15,6 @@
 
     <header class="page-header">
         <h1>@L.T("Shopping.Title")</h1>
-        <form id="add-item-form" class="add-form" data-add-url="@Url.Action("Add", "Items")">
-            <input id="add-item-name" class="input" placeholder="@L.T("Shopping.AddPlaceholder")" autocomplete="off" />
-            <button type="submit" class="btn-primary">@L.T("Shopping.AddButton")</button>
-        </form>
         <button type="button" id="copy-list" class="btn-secondary"
                 data-copied-text="@L.T("Shopping.Copied")"
                 @(Model.Items.Count == 0 ? "hidden" : null)>

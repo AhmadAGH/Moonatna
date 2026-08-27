@@ -1,28 +1,18 @@
 const container = document.querySelector("[data-state-picker]");
-const addForm = document.getElementById("add-item-form");
-const nameInput = document.getElementById("add-item-name");
 const list = document.getElementById("items-list");
 const rowTemplate = document.getElementById("item-row-template");
 
 // data-label-N is read via getAttribute: dataset does not camelCase dash-digit keys.
 const stateLabels = [0, 1, 2].map((v) => container.getAttribute(`data-label-${v}`));
 
-addForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    if (!name) return;
+// Adding items now lives in the global quick-add dialog (nav dock). When the
+// backend wiring lands, nav.js dispatches "moonatna:item-added" after a
+// successful POST; each page inserts its own row so it owns how rows render.
+document.addEventListener("moonatna:item-added", (e) => {
+    const item = e.detail;
+    if (!item || item.isAdHoc === true) return; // pantry shows tracked items only
 
-    const response = await fetch(addForm.dataset.addUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, isAdHoc: false, categoryId: null })
-    });
-    if (!response.ok) return;
-
-    const item = await response.json();
     appendRow(item);
-    nameInput.value = "";
-    nameInput.focus();
     document.getElementById("empty-state")?.remove();
 });
 

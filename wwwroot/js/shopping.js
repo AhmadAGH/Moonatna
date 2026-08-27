@@ -2,30 +2,19 @@ const section = document.querySelector(".items-page");
 const list = document.getElementById("items-list");
 const copyBtn = document.getElementById("copy-list");
 const emptyState = document.getElementById("empty-state");
-const addForm = document.getElementById("add-item-form");
-const nameInput = document.getElementById("add-item-name");
 const rowTemplate = document.getElementById("item-row-template");
 
 const SWIPE_TRIGGER = 88;
 let drag = null;
 
-// Quick add — ad-hoc one-off, created as خلص so it lands straight on this list.
-addForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const name = nameInput.value.trim();
-    if (!name) return;
+// Adding items now lives in the global quick-add dialog (nav dock). When the
+// backend wiring lands, nav.js dispatches "moonatna:item-added" after a
+// successful POST; each page inserts its own row so it owns how rows render.
+document.addEventListener("moonatna:item-added", (e) => {
+    const item = e.detail;
+    if (!item || item.state === 0) return; // shopping list shows ناقص/خلص only
 
-    const response = await fetch(addForm.dataset.addUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, isAdHoc: true, categoryId: null })
-    });
-    if (!response.ok) return;
-
-    const item = await response.json();
     appendRow(item);
-    nameInput.value = "";
-    nameInput.focus();
     emptyState.hidden = true;
     copyBtn.hidden = false;
 });

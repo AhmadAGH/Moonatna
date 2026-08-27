@@ -19,10 +19,6 @@
 
     <header class="page-header">
         <h1>@L.T("Pantry.Title")</h1>
-        <form id="add-item-form" class="add-form" data-add-url="@Url.Action("Add", "Items")">
-            <input id="add-item-name" class="input" placeholder="@L.T("Pantry.AddPlaceholder")" autocomplete="off" />
-            <button type="submit" class="btn-primary">@L.T("Pantry.AddButton")</button>
-        </form>
     </header>
 
     <div class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>
