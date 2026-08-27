@@ -345,6 +345,7 @@
     margin-top: 4px;
 }
 .add-submit:active { background: var(--teal-dark, #0a5a5d); }
+.add-submit[disabled] { opacity: .55; pointer-events: none; }
 
 /* ---------- toast ---------- */
 .add-toast {
@@ -365,6 +366,16 @@
     white-space: nowrap;
 }
 .add-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- item photo thumb (pantry + shopping rows) ----------
+   lives here temporarily — move to pantry.css / shopping.css in the cleanup pass */
+.item-thumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
 
 /* ---------- desktop: hide mobile chrome ---------- */
 @media (min-width: 900px) {

@@ -1,4 +1,5 @@
 @inject ILocalizationService Localization
+@inject Moonatna.Repositories.Lookups.ILookupsRepository Lookups
 @{
     var L = await Localization.GetStringsAsync();
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
@@ -6,6 +7,10 @@
     var initial = !string.IsNullOrWhiteSpace(userName) ? userName.Trim()[0].ToString().ToUpper() : "?";
     var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     string Active(string c) => string.Equals(ctrl, c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    var isArabic = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
+    var categories = isAuthenticated
+        ? (await Lookups.GetActiveCategoriesAsync()).OrderBy(c => c.SortOrder).ToList()
+        : new List<Moonatna.Models.Category>();
 }
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -109,9 +114,13 @@
         </nav>
 
         <div class="add-dialog" id="addDialog" role="dialog" aria-modal="true"
+             data-add-url="@Url.Action("Add", "Items")"
+             data-upload-url="@Url.Action("UploadImage", "Items")"
              data-title-quick="@L.T("QuickAdd.Title.Quick")"
              data-title-adhoc="@L.T("QuickAdd.Title.AdHoc")"
-             data-title-full="@L.T("QuickAdd.Title.Full")">
+             data-title-full="@L.T("QuickAdd.Title.Full")"
+             data-added-text="@L.T("QuickAdd.Added")"
+             data-error-text="@L.T("QuickAdd.Error")">
             <div class="add-dialog-head">
                 <span class="add-dialog-title">
                     <span id="addDialogTitle">@L.T("QuickAdd.Title.Quick")</span>
@@ -124,8 +133,12 @@
                     <input type="text" id="addNameInput" placeholder="@L.T("QuickAdd.NamePlaceholder")" autocomplete="off" />
                 </div>
                 <div class="add-field hidden" id="addCatsField">
-                    @* Category chips render here from LookupsRepository in the backend pass *@
-                    <div class="add-cats" id="addCats"></div>
+                    <div class="add-cats" id="addCats">
+                        @foreach (var cat in categories)
+                        {
+                            <button type="button" class="add-cat" data-category-id="@cat.Id">@(isArabic ? cat.NameAr : cat.NameEn)</button>
+                        }
+                    </div>
                 </div>
                 <div class="add-field hidden" id="addPhotoField">
                     <button type="button" class="add-photo-btn" id="addPhotoBtn">
@@ -134,13 +147,13 @@
                             <span>@L.T("QuickAdd.Photo")</span>
                         </span>
                     </button>
-                    <input type="file" id="addPhotoInput" accept="image/*" capture="environment" class="hidden" />
+                    <input type="file" id="addPhotoInput" accept="image/*" class="hidden" />
                 </div>
                 <button type="submit" class="add-submit">@L.T("QuickAdd.Submit")</button>
             </form>
         </div>
 
-        <div class="add-toast" id="addToast" data-text="@L.T("QuickAdd.UiOnly")" role="status"></div>
+        <div class="add-toast" id="addToast" role="status"></div>
     }
 
     <script src="~/js/register.js" asp-append-version="true"></script>
