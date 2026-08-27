@@ -12,5 +12,7 @@ namespace Moonatna.Services.Items
         Task SetCategoryAsync(int itemId, int? categoryId);
         Task<Item?> GetByIdAsync(int itemId);
         Task<IEnumerable<Item>> GetAllAsync(int familyId);
+        Task<bool> SetImageAsync(int familyId, int itemId, string? imagePath);
+
     }
 }

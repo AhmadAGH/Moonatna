@@ -13,9 +13,13 @@ public class ItemsController : BaseController
 {
     private readonly IItemsService _items;
     private readonly IFamiliesService _families;
+    private readonly IWebHostEnvironment _env;
 
-    public ItemsController(IItemsService items, IFamiliesService families)
-        => (_items, _families) = (items, families);
+    public ItemsController(IItemsService items, IFamiliesService families, IWebHostEnvironment env)
+    {
+        (_items, _families) = (items, families);
+        _env = env;
+    }
 
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddItemViewModel vm)
@@ -72,5 +76,38 @@ public class ItemsController : BaseController
         if (item is null || item.FamilyId != family.Id) return NotFound();
 
         return null;
+    }
+    [HttpPost]
+    public async Task<IActionResult> UploadImage([FromForm] UploadImageViewModel vm)
+    {
+        var family = await ResolveActiveFamilyAsync(_families);
+        if (family is null) return BadRequest();
+
+        var photo = vm.Photo;
+        if (photo is null || photo.Length == 0) return BadRequest();
+
+        var extension = Path.GetExtension(photo.FileName).ToLowerInvariant();
+        if (extension is not (".jpg" or ".jpeg" or ".png" or ".webp")) return BadRequest();
+        if (photo.Length > 5 * 1024 * 1024) return BadRequest();
+
+        var folder = Path.Combine(_env.WebRootPath, "uploads", "items");
+        Directory.CreateDirectory(folder);
+
+        var fileName = $"{Guid.NewGuid():N}{extension}";
+        var fullPath = Path.Combine(folder, fileName);
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await photo.CopyToAsync(stream);
+        }
+
+        var imagePath = $"/uploads/items/{fileName}";
+        var updated = await _items.SetImageAsync(family.Id, vm.ItemId, imagePath);
+        if (!updated)
+        {
+            System.IO.File.Delete(fullPath);
+            return NotFound();
+        }
+
+        return Ok(new { imagePath });
     }
 }

@@ -88,5 +88,13 @@ namespace Moonatna.Services.Items
 
         public async Task<Item?> GetByIdAsync(int itemId) => await _items.GetByIdAsync(itemId);
         public async Task<IEnumerable<Item>> GetAllAsync(int familyId) => await _items.GetByFamilyIdAsync(familyId);
+        public async Task<bool> SetImageAsync(int familyId, int itemId, string? imagePath)
+        {
+            var items = await _items.GetByFamilyIdAsync(familyId);
+            if (!items.Any(i => i.Id == itemId)) return false; // not this family's item
+
+            await _items.UpdateImagePathAsync(itemId, imagePath);
+            return true;
+        }
     }
 }

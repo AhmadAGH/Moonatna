@@ -41,6 +41,7 @@ public class PantryController : BaseController
                 Id = i.Id,
                 Name = i.Name,
                 State = i.State,
+                ImagePath = i.ImagePath,
                 CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null
             }).ToList()
         };

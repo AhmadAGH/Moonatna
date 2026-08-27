@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Database\Scripts\Script0005_quickadd_result.sql" />
     <None Remove="Database\Scripts\Script0010_nav_quickadd.sql" />
   </ItemGroup>
 
@@ -16,6 +17,7 @@
     <EmbeddedResource Include="Database\Scripts\Script0003_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0004_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0005_fixStateLabels.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0005_quickadd_result.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0006_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0007_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0008_badgeLabels.sql" />

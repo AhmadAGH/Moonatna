@@ -16,6 +16,7 @@ public class ShoppingItemViewModel
     public ItemState State { get; set; }        // LowStock or OutOfStock only
     public bool IsAdHoc { get; set; }
     public string? CategoryName { get; set; }
+    public string? ImagePath { get; set; }
 
     public string StateKey => $"ItemState.{State}";
 }

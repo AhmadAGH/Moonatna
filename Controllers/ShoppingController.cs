@@ -40,6 +40,7 @@ public class ShoppingController : BaseController
                 Name = i.Name,
                 State = i.State,
                 IsAdHoc = i.IsAdHoc,
+                ImagePath = i.ImagePath,
                 CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null
             }).ToList()
         };

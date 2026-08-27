@@ -15,6 +15,8 @@ public class PantryItemViewModel
     public string Name { get; set; } = string.Empty;
     public ItemState State { get; set; }
     public string? CategoryName { get; set; }
+    public string? ImagePath { get; set; }
+
 
     // Localization key for step 8: "ItemState.Available" etc.
     public string StateKey => $"ItemState.{State}";
