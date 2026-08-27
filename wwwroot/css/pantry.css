@@ -6,3 +6,29 @@
         width: 100%;
     }
 }
+
+/* Fix: distinguish the add-item field from a search bar with a card treatment + affordance. */
+.add-form {
+    background: var(--surface-2, #ffffff);
+    border-radius: 14px;
+    padding: 0.4rem 0.4rem 0.4rem 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.add-form .btn-primary::before {
+    content: "+ ";
+    font-weight: 700;
+}
+
+/* Fix: long-press on item rows was starting native text selection/callout on iOS Safari and Android Chrome. */
+.item-row,
+.item-row * {
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Fix: radial picker options were spaced too far apart (RADIUS 100 -> ~70, same ANGLES as state-picker.js). */
+.radial-picker > button:nth-child(1) { transform: translate(-63px, -30px) !important; }
+.radial-picker > button:nth-child(2) { transform: translate(0px, -70px) !important; }
+.radial-picker > button:nth-child(3) { transform: translate(63px, -30px) !important; }
