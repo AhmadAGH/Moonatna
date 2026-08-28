@@ -4,7 +4,7 @@
     position: fixed;
     inset: 0;
     z-index: 200;
-    background-color: rgba(35, 33, 28, 0.22);
+    background-color: var(--scrim);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
 }
@@ -32,7 +32,7 @@
     font: inherit;
     font-size: 0.9rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--on-primary);
     box-shadow: var(--shadow-lg);
     cursor: pointer;
     pointer-events: auto;
@@ -40,15 +40,15 @@
 }
 
 .radial-option.state-0 {
-    background-color: var(--green);
+    background-color: var(--ok-fill);
 }
 
 .radial-option.state-1 {
-    background-color: var(--amber);
+    background-color: var(--low-fill);
 }
 
 .radial-option.state-2 {
-    background-color: var(--red);
+    background-color: var(--out-fill);
 }
 
 .radial-option:hover,
@@ -57,5 +57,5 @@
 }
 
 .radial-option.active {
-    box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.65), var(--shadow-lg);
+    box-shadow: 0 0 0 5px rgba(252, 247, 240, 0.75), var(--shadow-lg);
 }

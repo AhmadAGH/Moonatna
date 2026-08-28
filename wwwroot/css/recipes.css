@@ -44,18 +44,18 @@ a.btn-primary {
 }
 
 .badge-doable {
-    background-color: var(--green-soft);
-    color: var(--green);
+    background-color: var(--ok-soft);
+    color: var(--ok);
 }
 
 .badge-missingfew {
-    background-color: var(--amber-soft);
-    color: var(--amber);
+    background-color: var(--low-soft);
+    color: var(--low);
 }
 
 .badge-missingalot {
-    background-color: var(--red-soft);
-    color: var(--red);
+    background-color: var(--out-soft);
+    color: var(--out);
 }
 
 /* ---------- details ---------- */
@@ -123,7 +123,7 @@ a.btn-primary {
 }
 
 .menu-pop .menu-danger {
-    color: var(--red);
+    color: var(--danger);
 }
 
 .missing-bar {
@@ -154,7 +154,7 @@ a.btn-primary {
 }
 
 .ingredient-row.is-missing {
-    background-color: var(--amber-soft);
+    background-color: var(--low-soft);
 }
 
 .ingredient-name {
@@ -183,13 +183,13 @@ a.btn-primary {
 }
 
 .avail-chip.avail {
-    background-color: var(--green-soft);
-    color: var(--green);
+    background-color: var(--ok-soft);
+    color: var(--ok);
 }
 
 .avail-chip.miss {
-    background-color: var(--red-soft);
-    color: var(--red);
+    background-color: var(--out-soft);
+    color: var(--out);
 }
 
 /* ---------- delete modal ---------- */
@@ -197,7 +197,7 @@ a.btn-primary {
     position: fixed;
     inset: 0;
     z-index: 250;
-    background-color: rgba(35, 33, 28, 0.4);
+    background-color: var(--scrim);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
     display: flex;
@@ -241,8 +241,8 @@ a.btn-primary {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background-color: var(--red);
-    color: #ffffff;
+    background-color: var(--danger);
+    color: var(--on-primary);
     border: none;
     border-radius: var(--radius-full);
     padding: 0.6rem 1.3rem;
@@ -253,7 +253,7 @@ a.btn-primary {
 }
 
 .btn-danger:hover {
-    background-color: #922b23;
+    background-color: var(--danger-strong);
     transform: translateY(-1px);
 }
 
@@ -338,7 +338,7 @@ a.btn-primary {
     width: 1rem;
     height: 1rem;
     border-radius: 50%;
-    background-color: #ffffff;
+    background-color: var(--surface);
     box-shadow: var(--shadow-sm);
     transition: transform 0.22s var(--ease-spring);
 }
@@ -351,7 +351,7 @@ a.btn-primary {
 }
 
 .opt-knob svg path {
-    stroke: #ffffff;
+    stroke: var(--on-primary);
     stroke-width: 2.4;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -363,7 +363,7 @@ a.btn-primary {
 
 .opt-check input:checked + .opt-track {
     background-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-soft);
+    box-shadow: var(--focus-ring);
 }
 
 .opt-check input:checked + .opt-track .opt-knob {
@@ -392,8 +392,8 @@ a.btn-primary {
 }
 
 .remove-row:hover {
-    color: var(--red);
-    background-color: var(--red-soft);
+    color: var(--danger);
+    background-color: var(--danger-soft);
 }
 
 .save-btn {

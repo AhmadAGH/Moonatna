@@ -35,7 +35,7 @@
 
 .login-error {
     margin: 1rem 0 0;
-    color: var(--red);
+    color: var(--danger);
     font-size: 0.9rem;
     font-weight: 500;
 }

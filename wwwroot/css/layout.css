@@ -1,30 +1,78 @@
 /* =====================================================
-   Moonatna design system
-   Warm paper, deep ink, teal action, amber warmth.
+   MONATNA design system
+   Palette by Om Sanad. Olive brand, terracotta accent,
+   cream paper, charcoal ink.
+
+   RULES
+   1. Never hardcode a colour outside this block.
+   2. --olive-light is decoration only (3.4:1) — never text.
+   3. --beige / --sand are fills for chips and illustrations.
+      Cards are --surface. Secondary text on beige fails (2.96:1).
+   4. Cream and warm white are 1.05:1 apart — elevation must come
+      from --border and shadow, never from background colour.
+   5. "موجود" has no colour. Olive brand and any green are the same
+      hue (1.2:1 at every lightness), so a green chip is unreadable
+      as a signal. Only قرب يخلص and مخلص carry colour.
    ===================================================== */
 
 :root {
-    --bg: #f6f4ee;
-    --surface: #ffffff;
-    --surface-2: #faf8f3;
-    --text: #23211c;
-    --muted: #8b8574;
-    --primary: #0d7377;
-    --primary-strong: #0a5b5e;
-    --primary-soft: #def0ef;
-    --amber: #b45309;
-    --amber-soft: #fdf0dd;
-    --green: #15803d;
-    --green-soft: #e5f3e9;
-    --red: #b3352c;
-    --red-soft: #fcebe9;
-    --border: #e7e2d5;
+    /* ---------- brand ---------- */
+    --primary: #696C56;             /* Olive — buttons, CTA, logo, icons */
+    --primary-strong: #5B5D4C;      /* hover / pressed  (cream on it 6.32:1) */
+    --primary-light: #858875;       /* Light Olive — DECORATION ONLY, 3.4:1 */
+    --primary-soft: #F0ECE4;        /* olive tint bg   (olive on it 4.59:1) */
+    --on-primary: #FCF7F0;          /* cream, not pure white (5.08:1) */
+
+    --accent: #9E5B44;              /* Terracotta — scarce, ~5% of surface */
+    --accent-strong: #84503E;
+    --accent-soft: #F6EEE6;         /* (terracotta on it 4.53:1) */
+
+    /* ---------- neutrals ---------- */
+    --bg: #FCF7F0;                  /* Cream — main background */
+    --surface: #FFFDFC;             /* Warm White — cards, sheets */
+    --surface-2: #F5ECE2;           /* recessed / row hover (muted on it 4.36:1) */
+    --beige: #D3C3AF;               /* Warm Beige — fills, dividers, illustration */
+    --sand: #E5D4C2;                /* Soft Sand — chips, soft areas */
+    --text: #292927;                /* Charcoal (13.7:1 on cream) */
+    --muted: #716E66;               /* Warm Gray (4.78:1 on cream) */
+    --border: #DDD5CA;              /* Soft Taupe */
+    --border-strong: #C7C0B6;       /* inputs — taupe alone is too faint to find */
+
+    /* ---------- stock states ----------
+       Text/icon values, each AA on its own tint. --*-fill is for
+       solid surfaces carrying --on-primary text (radial picker). */
+    --ok: #4C5F3F;
+    --ok-soft: #E8EDE3;             /* 5.85:1 */
+    --ok-fill: #5A6D4C;
+
+    --low: #8A6428;                 /* darkened from #B88A4A, which failed at 2.63:1 */
+    --low-soft: #F5EBDD;            /* 4.53:1 */
+    --low-fill: #8F672E;
+
+    --out: #8E4238;                 /* darkened from #A75C52 (was 3.90:1) */
+    --out-soft: #F3E2DF;            /* 5.61:1 */
+    --out-fill: #8E4238;
+
+    /* ---------- system ----------
+       --danger is destructive intent (delete), NOT "out of stock".
+       It is only ever an action with an icon + label, never a chip,
+       so its closeness to --out is safe. */
+    --danger: #A32E22;
+    --danger-strong: #8A2419;
+    --danger-soft: #F7E7E4;
+    --focus: rgba(105, 108, 86, 0.45);
+    --focus-ring: 0 0 0 3px var(--focus);
+    --disabled-bg: #EFE9E1;
+    --disabled-text: #A29E96;
+    --disabled-border: #E3DCD3;
+    --scrim: rgba(41, 41, 39, 0.42);
+
     --radius: 1rem;
     --radius-sm: 0.65rem;
     --radius-full: 999px;
-    --shadow-sm: 0 1px 2px rgba(35, 33, 28, 0.05);
-    --shadow-md: 0 4px 16px rgba(35, 33, 28, 0.08);
-    --shadow-lg: 0 16px 40px rgba(35, 33, 28, 0.14);
+    --shadow-sm: 0 1px 2px rgba(41, 41, 39, 0.05);
+    --shadow-md: 0 4px 16px rgba(41, 41, 39, 0.08);
+    --shadow-lg: 0 16px 40px rgba(41, 41, 39, 0.14);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --font: "Rubik", "Segoe UI", Tahoma, system-ui, -apple-system, sans-serif;
@@ -50,7 +98,7 @@ body {
     margin: 0;
     font-family: var(--font);
     background-color: var(--bg);
-    background-image: radial-gradient(1200px 500px at 85% -10%, rgba(13, 115, 119, 0.06), transparent 60%);
+    background-image: radial-gradient(1200px 500px at 85% -10%, rgba(105, 108, 86, 0.07), transparent 60%);
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
@@ -68,7 +116,7 @@ body {
     align-items: center;
     gap: 1.5rem;
     padding: 0.7rem 1.25rem;
-    background-color: rgba(246, 244, 238, 0.82);
+    background-color: rgba(252, 247, 240, 0.82);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--border);
@@ -111,7 +159,7 @@ body {
 
 .main-nav a:hover {
     color: var(--text);
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: var(--surface);
 }
 
 .main-nav a:active {
@@ -136,7 +184,7 @@ body {
 
 .link-button:hover {
     color: var(--text);
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: var(--surface);
 }
 
 .page {
@@ -163,7 +211,7 @@ body {
 
 .btn-primary {
     background-color: var(--primary);
-    color: #ffffff;
+    color: var(--on-primary);
     border: none;
     padding: 0.75rem 1.6rem;
     box-shadow: var(--shadow-sm);
@@ -180,10 +228,27 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:disabled {
-    opacity: 0.55;
+.btn-primary:disabled,
+.btn-secondary:disabled {
+    background-color: var(--disabled-bg);
+    border-color: var(--disabled-border);
+    color: var(--disabled-text);
+    box-shadow: none;
     cursor: not-allowed;
     transform: none;
+}
+
+/* Focus is keyboard-only so pointer users never see a ring, but the ring
+   must survive on cream AND on olive — hence the 2px offset. */
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.purchase-btn:focus-visible,
+.link-button:focus-visible,
+.main-nav a:focus-visible,
+.item-row:focus-visible {
+    outline: 2px solid var(--primary-strong);
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring);
 }
 
 .btn-secondary {
@@ -196,7 +261,7 @@ body {
 
 .btn-secondary:hover {
     background-color: var(--primary);
-    color: #ffffff;
+    color: var(--on-primary);
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -208,7 +273,7 @@ body {
 /* ---------- forms ---------- */
 .input {
     padding: 0.75rem 1.1rem;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--border-strong);
     border-radius: var(--radius-full);
     font: inherit;
     width: 100%;
@@ -224,7 +289,7 @@ body {
 .input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px var(--primary-soft);
+    box-shadow: var(--focus-ring);
 }
 
 /* ---------- cards & alerts ---------- */
@@ -249,9 +314,9 @@ body {
 }
 
 .alert-error {
-    background-color: var(--red-soft);
-    color: var(--red);
-    border: 1px solid #f3c1bc;
+    background-color: var(--danger-soft);
+    color: var(--danger);
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     padding: 0.75rem 1rem;
     margin-bottom: 1.25rem;
@@ -341,19 +406,27 @@ body {
     transition: background-color 0.2s, color 0.2s;
 }
 
+/* موجود — the healthy default. No fill, no colour, no attention.
+   Most items are in stock; colouring them paints the whole screen for
+   zero information and collides with the olive brand. */
 .state-0 {
-    background-color: var(--green-soft);
-    color: var(--green);
+    background-color: transparent;
+    color: var(--muted);
+    padding-inline: 0.35rem;
 }
 
+/* قرب يخلص */
 .state-1 {
-    background-color: var(--amber-soft);
-    color: var(--amber);
+    background-color: var(--low-soft);
+    color: var(--low);
 }
 
+/* مخلص — loudest state, gets a ring so it survives greyscale and
+   deuteranopia even before the Arabic label is read. */
 .state-2 {
-    background-color: var(--red-soft);
-    color: var(--red);
+    background-color: var(--out-soft);
+    color: var(--out);
+    box-shadow: inset 0 0 0 1px var(--out);
 }
 
 .row-actions {
@@ -363,7 +436,7 @@ body {
 }
 
 .purchase-btn {
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--border-strong);
     background-color: var(--surface);
     border-radius: var(--radius-full);
     width: 2.1rem;
@@ -379,9 +452,9 @@ body {
 }
 
 .purchase-btn:hover {
-    background-color: var(--green);
-    border-color: var(--green);
-    color: #ffffff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--on-primary);
     transform: scale(1.1);
 }
 

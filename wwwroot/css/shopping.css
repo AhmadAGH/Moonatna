@@ -25,8 +25,8 @@
     align-items: center;
     justify-content: flex-start; /* RTL: the ✓ label anchors to the start side */
     padding-inline: 1.1rem;
-    background-color: var(--green);
-    color: #ffffff;
+    background-color: var(--ok-fill);
+    color: var(--on-primary);
     font-weight: 700;
     opacity: 0;
 }
@@ -46,8 +46,8 @@
     margin-inline-start: 0.45rem;
     font-size: 0.72rem;
     font-weight: 600;
-    color: var(--amber);
-    background-color: var(--amber-soft);
+    color: var(--accent);
+    background-color: var(--accent-soft);
     border-radius: var(--radius-full);
     padding: 0.08rem 0.55rem;
     vertical-align: middle;

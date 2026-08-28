@@ -60,7 +60,7 @@
 
 .badge-owner {
     background-color: var(--primary);
-    color: #ffffff;
+    color: var(--on-primary);
 }
 
 .hint {
@@ -98,7 +98,7 @@
     width: 1.2rem;
     height: 1.2rem;
     border-radius: 50%;
-    background-color: #ffffff;
+    background-color: var(--surface);
     top: 0.2rem;
     inset-inline-start: 0.2rem;
     transition: transform 0.15s ease;

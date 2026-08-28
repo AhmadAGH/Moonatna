@@ -9,10 +9,11 @@
 
 /* Fix: distinguish the add-item field from a search bar with a card treatment + affordance. */
 .add-form {
-    background: var(--surface-2, #ffffff);
+    background: var(--surface);
     border-radius: 14px;
     padding: 0.4rem 0.4rem 0.4rem 0.75rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
 }
 
 .add-form .btn-primary::before {
