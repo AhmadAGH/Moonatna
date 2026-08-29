@@ -1,31 +1,49 @@
 /* =====================================================
    STATE RAIL — sliding-pill status control
 
-   Replaces state-picker.js (radial) and the long-press
-   flow on .state-chip. One tap = one state change;
-   the filled pill slides to the tapped segment.
+   Replaces state-picker.js (radial). One tap = one state
+   change; posts to ItemsController.SetState using the same
+   call state-picker.js made (URL from data-set-state-url
+   on the [data-state-picker] container, JSON body
+   { itemId, state }). Optimistic UI — rolls back if the
+   server rejects the change.
    ===================================================== */
 (function () {
     "use strict";
 
-    function setState(rail, state) {
+    var container = document.querySelector("[data-state-picker]");
+
+    function apply(rail, state) {
         rail.querySelectorAll(".state-seg").forEach(function (seg) {
-            var active = seg.dataset.state === state;
+            var active = seg.dataset.state === String(state);
             seg.classList.toggle("is-active", active);
             seg.setAttribute("aria-checked", active ? "true" : "false");
         });
-        rail.dataset.current = state;
+        rail.dataset.current = String(state);
 
-        /* TODO (server wiring): reuse the exact fetch call
-           state-picker.js makes to ItemsController.SetState
-           (same URL + antiforgery header), with:
-             { id: Number(rail.dataset.itemId), state: Number(state) }
-           Optimistic UI is fine — the change is cheap to
-           reverse, so update first, roll back on failure. */
+        var row = rail.closest(".item-row");
+        if (row) row.dataset.state = String(state);
     }
 
-    /* One-tap state change (event delegation — works for
-       rows added later by pantry.js / quick-add too) */
+    function setState(rail, state) {
+        var prev = rail.dataset.current;
+        apply(rail, state);
+
+        if (!container || !container.dataset.setStateUrl) return;
+
+        fetch(container.dataset.setStateUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ itemId: Number(rail.dataset.itemId), state: Number(state) })
+        }).then(function (res) {
+            if (!res.ok) apply(rail, prev);
+        }).catch(function () {
+            apply(rail, prev);
+        });
+    }
+
+    /* one-tap state change — delegation covers rows added
+       later by pantry.js (quick-add) too */
     document.addEventListener("click", function (e) {
         var seg = e.target.closest(".state-seg");
         if (!seg) return;
@@ -34,7 +52,7 @@
         setState(rail, seg.dataset.state);
     });
 
-    /* Radiogroup keyboard support — RTL-aware arrows */
+    /* radiogroup keyboard support — RTL-aware arrows */
     document.addEventListener("keydown", function (e) {
         if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
         var seg = e.target.closest(".state-seg");

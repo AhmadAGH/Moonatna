@@ -95,6 +95,19 @@
     outline-offset: 2px;
 }
 
+/* --- placement inside item rows (one line: name + rail) --- */
+.item-row:has(.state-rail) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.item-row .state-rail {
+    flex: 1 1 auto;
+    max-width: 215px;
+    margin-inline-start: auto;
+}
+
 /* hidden SVG sprite holder used by the views */
 .svg-sprite {
     position: absolute;

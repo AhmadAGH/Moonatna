@@ -2,9 +2,6 @@ const container = document.querySelector("[data-state-picker]");
 const list = document.getElementById("items-list");
 const rowTemplate = document.getElementById("item-row-template");
 
-// data-label-N is read via getAttribute: dataset does not camelCase dash-digit keys.
-const stateLabels = [0, 1, 2].map((v) => container.getAttribute(`data-label-${v}`));
-
 // Adding items now lives in the global quick-add dialog (nav dock). nav.js
 // dispatches "moonatna:item-added" after a successful save; each page inserts
 // its own row so it owns how rows render.
@@ -25,9 +22,16 @@ function appendRow(item) {
     const thumb = row.querySelector(".item-thumb");
     if (thumb && item.imagePath) { thumb.src = item.imagePath; thumb.hidden = false; }
 
-    const chip = row.querySelector(".state-chip");
-    chip.className = `state-chip state-${item.state}`;
-    chip.textContent = stateLabels[item.state];
+    // state rail: reflect the new item's state on the cloned rail
+    const rail = row.querySelector(".state-rail");
+    rail.dataset.itemId = item.id;
+    rail.dataset.current = String(item.state);
+    rail.setAttribute("aria-label", item.name);
+    rail.querySelectorAll(".state-seg").forEach((seg) => {
+        const active = seg.dataset.state === String(item.state);
+        seg.classList.toggle("is-active", active);
+        seg.setAttribute("aria-checked", active ? "true" : "false");
+    });
 
     getUncategorizedGroup().querySelector("ul").appendChild(row);
     row.animate(

@@ -1,8 +1,14 @@
-@model Moonatna.ViewModels.Pantry.PantryIndexViewModel
+@model Moonatna.ViewModels.Pantries.PantryIndexViewModel
 @inject ILocalizationService Localization
 @{
     var L = await Localization.GetStringsAsync();
     ViewData["Title"] = L.T("Nav.Pantry");
+
+    var groups = Model.Items
+        .GroupBy(i => i.CategoryName)
+        .ToList();
+
+    var stateKeys = new[] { "ItemState.Available", "ItemState.RunningLow", "ItemState.OutOfStock" };
 }
 
 @section Styles {
@@ -10,78 +16,96 @@
     <link rel="stylesheet" href="~/css/status-rail.css" asp-append-version="true" />
 }
 
-@* state icons sprite — referenced by the rails below *@
-<svg class="svg-sprite" aria-hidden="true">
-    <symbol id="i-state-0" viewBox="0 0 24 24">
-        <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-    </symbol>
-    <symbol id="i-state-1" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
-        <path d="M4.6 14.4A8 8 0 0 0 19.4 14.4Z" fill="currentColor" />
-    </symbol>
-    <symbol id="i-state-2" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
-        <path d="M9.5 9.5l5 5M14.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-    </symbol>
-</svg>
+<section class="items-page rise"
+         data-state-picker
+         data-set-state-url="@Url.Action("SetState", "Items")"
+         data-uncategorized="@L.T("Common.Uncategorized")">
 
-<section class="pantry-page">
-    @if (!Model.Items.Any())
-    {
-        <p class="empty-note">@L.T("Pantry.Empty")</p>
-    }
-    else
-    {
-        <ul class="item-list" id="itemList">
-            @foreach (var item in Model.Items)
-            {
-                <li class="item-row" data-item-id="@item.Id">
-                    <img class="item-thumb" src="@item.ImagePath" alt="" hidden />
-                    <span class="item-name">@item.Name</span>
-                    <div class="state-rail" role="radiogroup" data-item-id="@item.Id" data-current="@((int)item.State)" aria-label="@L.T("Item.State")">
-                        @for (var s = 0; s <= 2; s++)
-                        {
-                            var active = (int)item.State == s;
-                            <button type="button"
-                                    class="state-seg@(active ? " is-active" : "")"
-                                    data-state="@s"
-                                    role="radio"
-                                    aria-checked="@(active ? "true" : "false")"
-                                    aria-label="@L.T($"ItemState.{s}")">
-                                <svg><use href="#i-state-@s" /></svg>
-                                <span class="seg-label">@L.T($"ItemState.{s}")</span>
-                            </button>
-                        }
-                    </div>
-                </li>
-            }
-        </ul>
-    }
+    @* state icons sprite — referenced by every rail below *@
+    <svg class="svg-sprite" aria-hidden="true">
+        <symbol id="i-state-0" viewBox="0 0 24 24">
+            <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-state-1" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
+            <path d="M4.6 14.4A8 8 0 0 0 19.4 14.4Z" fill="currentColor" />
+        </symbol>
+        <symbol id="i-state-2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
+            <path d="M9.5 9.5l5 5M14.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+        </symbol>
+    </svg>
+
+    <header class="page-header">
+        <h1>@L.T("Pantry.Title")</h1>
+    </header>
+
+    <div class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>
+        <div class="lottie-mount" data-lottie="float"></div>
+        <p>@L.T("Pantry.Empty")</p>
+    </div>
+
+    <div id="items-list">
+        @foreach (var group in groups)
+        {
+            <section class="category-group" data-category-group="@(group.Key ?? "")">
+                <h2>@(group.Key ?? L.T("Common.Uncategorized"))</h2>
+                <ul>
+                    @foreach (var item in group)
+                    {
+                        <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
+                            }
+                            <span class="item-name">@item.Name</span>
+                            <div class="state-rail" role="radiogroup" data-item-id="@item.Id" data-current="@((int)item.State)" aria-label="@item.Name">
+                                @for (var s = 0; s <= 2; s++)
+                                {
+                                    var isActive = (int)item.State == s;
+                                    <button type="button"
+                                            class="state-seg@(isActive ? " is-active" : "")"
+                                            data-state="@s"
+                                            role="radio"
+                                            aria-checked="@(isActive ? "true" : "false")"
+                                            aria-label="@L.T(stateKeys[s])">
+                                        <svg><use href="#i-state-@s" /></svg>
+                                        <span class="seg-label">@L.T(stateKeys[s])</span>
+                                    </button>
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+    </div>
+
+    @* template for rows added by pantry.js (quick-add) *@
+    <template id="item-row-template">
+        <li class="item-row" data-item-id="0" data-state="0">
+            <img class="item-thumb" alt="" loading="lazy" hidden />
+            <span class="item-name"></span>
+            <div class="state-rail" role="radiogroup" data-item-id="0" data-current="0" aria-label="">
+                <button type="button" class="state-seg is-active" data-state="0" role="radio" aria-checked="true" aria-label="@L.T("ItemState.Available")">
+                    <svg><use href="#i-state-0" /></svg>
+                    <span class="seg-label">@L.T("ItemState.Available")</span>
+                </button>
+                <button type="button" class="state-seg" data-state="1" role="radio" aria-checked="false" aria-label="@L.T("ItemState.RunningLow")">
+                    <svg><use href="#i-state-1" /></svg>
+                    <span class="seg-label">@L.T("ItemState.RunningLow")</span>
+                </button>
+                <button type="button" class="state-seg" data-state="2" role="radio" aria-checked="false" aria-label="@L.T("ItemState.OutOfStock")">
+                    <svg><use href="#i-state-2" /></svg>
+                    <span class="seg-label">@L.T("ItemState.OutOfStock")</span>
+                </button>
+            </div>
+        </li>
+    </template>
 </section>
 
-@* template for rows added by pantry.js (quick-add) *@
-<template id="itemRowTemplate">
-    <li class="item-row" data-item-id="">
-        <img class="item-thumb" alt="" hidden />
-        <span class="item-name"></span>
-        <div class="state-rail" role="radiogroup" data-item-id="" data-current="0" aria-label="@L.T("Item.State")">
-            <button type="button" class="state-seg is-active" data-state="0" role="radio" aria-checked="true" aria-label="@L.T("ItemState.0")">
-                <svg><use href="#i-state-0" /></svg>
-                <span class="seg-label">@L.T("ItemState.0")</span>
-            </button>
-            <button type="button" class="state-seg" data-state="1" role="radio" aria-checked="false" aria-label="@L.T("ItemState.1")">
-                <svg><use href="#i-state-1" /></svg>
-                <span class="seg-label">@L.T("ItemState.1")</span>
-            </button>
-            <button type="button" class="state-seg" data-state="2" role="radio" aria-checked="false" aria-label="@L.T("ItemState.2")">
-                <svg><use href="#i-state-2" /></svg>
-                <span class="seg-label">@L.T("ItemState.2")</span>
-            </button>
-        </div>
-    </li>
-</template>
-
 @section Scripts {
+    <script src="~/js/lottie.js" asp-append-version="true"></script>
     <script src="~/js/status-rail.js" asp-append-version="true"></script>
     <script src="~/js/pantry.js" asp-append-version="true"></script>
 }
