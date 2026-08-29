@@ -120,42 +120,43 @@
     z-index: 950;
     filter: drop-shadow(0 -6px 28px rgba(41, 41, 39, .14));
 }
+/* The bar is a transparent layout box; its visible surface is a ::before
+   layer. The notch mask lives on that layer, not on .nav-bar itself, so the
+   mask can never touch the nav items — masking the bar directly clipped the
+   raised bubble, and forcing it through with mask-clip: no-clip left a
+   hairline seam across the bubble at the bar's top edge, where the masked
+   layer was composited. Separating surface from contents removes the whole
+   problem instead of fighting it. */
 .nav-bar {
     position: relative;
     height: 66px;
     max-width: 480px;
     margin-inline: auto;
-    background: var(--surface);
     border-radius: 28px;
     display: flex;
     align-items: stretch;
     justify-content: space-between;
     padding-inline: 8px;
-
-    /* The notch mask also has to let the active item's raised bubble poke
-       out of the top edge. A mask clips descendants to the mask image, so
-       the image is grown 40px taller than the bar and anchored to the
-       bottom; the notch circle is re-centred 40px down so it still lands
-       exactly on the bar's top edge. Everything in that extra 40px band
-       is opaque, which is what lets the bubble escape. */
-    --nav-notch: radial-gradient(circle 42px at 50% 40px, transparent 41px, #000 42px);
+}
+.nav-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: var(--surface);
+    /* notch for the FAB: circle centred on the bar's top edge */
+    --nav-notch: radial-gradient(circle 42px at 50% 0, transparent 41px, #000 42px);
     -webkit-mask-image: var(--nav-notch);
     mask-image: var(--nav-notch);
-    -webkit-mask-size: 100% calc(100% + 40px);
-    mask-size: 100% calc(100% + 40px);
-    -webkit-mask-position: 50% 100%;
-    mask-position: 50% 100%;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    /* without no-clip the mask painting area stays the border box and the
-       raised bubble gets sheared off at the bar's top edge */
-    -webkit-mask-clip: no-clip;
-    mask-clip: no-clip;
 }
-.nav-side { display: flex; flex: 1; }
+.nav-side { display: flex; flex: 1; position: relative; z-index: 1; }
 .nav-gap { width: 84px; flex-shrink: 0; }
 .nav-item {
     position: relative;
+    z-index: 1;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -178,7 +179,7 @@
    The bubble is a ::before so no markup changes. It sits behind the icon
    and lifts 15px above the bar so it visibly breaks the dock edge, the
    same language as the FAB in its notch. Colour changes independently of
-   the lift, so if a browser clips the mask the active state still reads.
+   the lift, so the active state still reads even if the raise fails to paint.
 
    Motion note: these are real page navigations, so a CSS *transition* on
    .active would never fire — the next document renders with .active already
