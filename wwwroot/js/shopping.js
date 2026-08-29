@@ -25,8 +25,17 @@ function appendRow(item) {
     row.dataset.itemId = item.id;
     wrap.querySelector(".item-name-text").textContent = item.name;
 
-    const thumb = wrap.querySelector(".item-thumb");
-    if (thumb && item.imagePath) { thumb.src = item.imagePath; thumb.hidden = false; }
+    const img = wrap.querySelector("img.item-thumb");
+    const iconTile = wrap.querySelector(".item-thumb-icon");
+    if (item.imagePath) {
+        img.src = item.imagePath;
+        img.hidden = false;
+        iconTile.hidden = true;
+    } else {
+        // Quick-add doesn't resolve the category icon yet — generic basket
+        // icon (already set on the template) until the page is reloaded.
+        iconTile.hidden = false;
+    }
 
     getUncategorizedGroup().querySelector("ul").appendChild(wrap);
     wrap.animate(

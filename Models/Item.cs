@@ -13,6 +13,7 @@
         public int FamilyId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int? CategoryId { get; set; }
+        public int? Quantity { get; set; }
         public ItemState State { get; set; }
         public bool IsAdHoc { get; set; }
         public string? ImagePath { get; set; }

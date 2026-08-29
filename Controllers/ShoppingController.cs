@@ -27,6 +27,7 @@ public class ShoppingController : BaseController
         var categories = await _lookups.GetActiveCategoriesAsync();
         var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
         var categoryNames = categories.ToDictionary(c => c.Id, c => isArabic ? c.NameAr : c.NameEn);
+        var categoryIcons = categories.ToDictionary(c => c.Id, c => c.IconClass);
 
         var items = await _items.GetShoppingListAsync(family.Id);
 
@@ -41,7 +42,9 @@ public class ShoppingController : BaseController
                 State = i.State,
                 IsAdHoc = i.IsAdHoc,
                 ImagePath = i.ImagePath,
-                CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null
+                Quantity = i.Quantity,
+                CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null,
+                CategoryIcon = i.CategoryId.HasValue && categoryIcons.TryGetValue(i.CategoryId.Value, out var ci) ? ci : null
             }).ToList()
         };
 

@@ -11,10 +11,19 @@
 
 <section class="items-page rise"
          data-purchase-url="@Url.Action("Purchase", "Items")"
+         data-layout-key="shopping"
          data-uncategorized="@L.T("Common.Uncategorized")">
 
     <header class="page-header">
         <h1>@L.T("Shopping.Title")</h1>
+        <div class="layout-toggle" role="group" aria-label="@L.T("Common.LayoutChoice")">
+            <button type="button" data-layout="full" aria-pressed="true" title="@L.T("Common.LayoutFull")">
+                <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+            </button>
+            <button type="button" data-layout="grid" aria-pressed="false" title="@L.T("Common.LayoutGrid")">
+                <i class="fa-solid fa-grip" aria-hidden="true"></i>
+            </button>
+        </div>
         <button type="button" id="copy-list" class="btn-secondary"
                 data-copied-text="@L.T("Shopping.Copied")"
                 @(Model.Items.Count == 0 ? "hidden" : null)>
@@ -42,16 +51,28 @@
                                 {
                                     <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
                                 }
-                                <span class="item-name">
-                                    <span class="item-name-text">@item.Name</span>
-                                    @if (item.IsAdHoc)
+                                else
+                                {
+                                    <span class="item-thumb item-thumb-icon">
+                                        <i class="@(string.IsNullOrEmpty(item.CategoryIcon) ? "fa-solid fa-basket-shopping" : item.CategoryIcon)" aria-hidden="true"></i>
+                                    </span>
+                                }
+                                <div class="item-card-body">
+                                    <span class="item-name">
+                                        <span class="item-name-text">@item.Name</span>
+                                        @if (item.IsAdHoc)
+                                        {
+                                            <span class="adhoc-tag">@L.T("Item.AdHoc")</span>
+                                        }
+                                    </span>
+                                    @if (item.Quantity is > 0)
                                     {
-                                        <span class="adhoc-tag">@L.T("Item.AdHoc")</span>
+                                        <span class="qty-tag">@item.Quantity</span>
                                     }
-                                </span>
-                                <div class="row-actions">
-                                    <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
-                                    <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                                    <div class="row-actions">
+                                        <span class="state-chip state-@((int)item.State)">@L.T(item.StateKey)</span>
+                                        <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                                    </div>
                                 </div>
                             </div>
                         </li>
@@ -66,13 +87,17 @@
             <div class="swipe-under"><span>✓ @L.T("Shopping.Purchased")</span></div>
             <div class="item-row" data-item-id="0" data-state="2">
                 <img class="item-thumb" alt="" loading="lazy" hidden />
-                <span class="item-name">
-                    <span class="item-name-text"></span>
-                    <span class="adhoc-tag">@L.T("Item.AdHoc")</span>
-                </span>
-                <div class="row-actions">
-                    <span class="state-chip state-2">@L.T("ItemState.OutOfStock")</span>
-                    <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                <span class="item-thumb item-thumb-icon" hidden><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i></span>
+                <div class="item-card-body">
+                    <span class="item-name">
+                        <span class="item-name-text"></span>
+                        <span class="adhoc-tag">@L.T("Item.AdHoc")</span>
+                    </span>
+                    <span class="qty-tag" hidden></span>
+                    <div class="row-actions">
+                        <span class="state-chip state-2">@L.T("ItemState.OutOfStock")</span>
+                        <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">✓</button>
+                    </div>
                 </div>
             </div>
         </li>
@@ -81,9 +106,11 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/shopping.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/item-cards.css" asp-append-version="true" />
 }
 
 @section Scripts {
     <script src="~/js/lottie.js" asp-append-version="true"></script>
     <script src="~/js/shopping.js" asp-append-version="true"></script>
+    <script src="~/js/items-view.js" asp-append-version="true"></script>
 }

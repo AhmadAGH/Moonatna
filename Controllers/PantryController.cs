@@ -29,6 +29,7 @@ public class PantryController : BaseController
         var categories = await _lookups.GetActiveCategoriesAsync();
         var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
         var categoryNames = categories.ToDictionary(c => c.Id, c => isArabic ? c.NameAr : c.NameEn);
+        var categoryIcons = categories.ToDictionary(c => c.Id, c => c.IconClass);
 
         var items = await _items.GetPantryAsync(family.Id);
 
@@ -42,7 +43,9 @@ public class PantryController : BaseController
                 Name = i.Name,
                 State = i.State,
                 ImagePath = i.ImagePath,
-                CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null
+                Quantity = i.Quantity,
+                CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null,
+                CategoryIcon = i.CategoryId.HasValue && categoryIcons.TryGetValue(i.CategoryId.Value, out var ci) ? ci : null
             }).ToList()
         };
 

@@ -14,10 +14,12 @@
 @section Styles {
     <link rel="stylesheet" href="~/css/pantry.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/status-rail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/item-cards.css" asp-append-version="true" />
 }
 
 <section class="items-page rise"
          data-state-picker
+         data-layout-key="pantry"
          data-set-state-url="@Url.Action("SetState", "Items")"
          data-uncategorized="@L.T("Common.Uncategorized")">
 
@@ -38,6 +40,14 @@
 
     <header class="page-header">
         <h1>@L.T("Pantry.Title")</h1>
+        <div class="layout-toggle" role="group" aria-label="@L.T("Common.LayoutChoice")">
+            <button type="button" data-layout="full" aria-pressed="true" title="@L.T("Common.LayoutFull")">
+                <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+            </button>
+            <button type="button" data-layout="grid" aria-pressed="false" title="@L.T("Common.LayoutGrid")">
+                <i class="fa-solid fa-grip" aria-hidden="true"></i>
+            </button>
+        </div>
     </header>
 
     <div class="empty-state" id="empty-state" @(Model.Items.Count > 0 ? "hidden" : null)>
@@ -58,21 +68,33 @@
                             {
                                 <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
                             }
-                            <span class="item-name">@item.Name</span>
-                            <div class="state-rail" role="radiogroup" data-item-id="@item.Id" data-current="@((int)item.State)" aria-label="@item.Name">
-                                @for (var s = 0; s <= 2; s++)
+                            else
+                            {
+                                <span class="item-thumb item-thumb-icon">
+                                    <i class="@(string.IsNullOrEmpty(item.CategoryIcon) ? "fa-solid fa-basket-shopping" : item.CategoryIcon)" aria-hidden="true"></i>
+                                </span>
+                            }
+                            <div class="item-card-body">
+                                <span class="item-name">@item.Name</span>
+                                @if (item.Quantity is > 0)
                                 {
-                                    var isActive = (int)item.State == s;
-                                    <button type="button"
-                                            class="state-seg@(isActive ? " is-active" : "")"
-                                            data-state="@s"
-                                            role="radio"
-                                            aria-checked="@(isActive ? "true" : "false")"
-                                            aria-label="@L.T(stateKeys[s])">
-                                        <svg><use href="#i-state-@s" /></svg>
-                                        <span class="seg-label">@L.T(stateKeys[s])</span>
-                                    </button>
+                                    <span class="qty-tag">@item.Quantity</span>
                                 }
+                                <div class="state-rail" role="radiogroup" data-item-id="@item.Id" data-current="@((int)item.State)" aria-label="@item.Name">
+                                    @for (var s = 0; s <= 2; s++)
+                                    {
+                                        var isActive = (int)item.State == s;
+                                        <button type="button"
+                                                class="state-seg@(isActive ? " is-active" : "")"
+                                                data-state="@s"
+                                                role="radio"
+                                                aria-checked="@(isActive ? "true" : "false")"
+                                                aria-label="@L.T(stateKeys[s])">
+                                            <svg><use href="#i-state-@s" /></svg>
+                                            <span class="seg-label">@L.T(stateKeys[s])</span>
+                                        </button>
+                                    }
+                                </div>
                             </div>
                         </li>
                     }
@@ -85,20 +107,24 @@
     <template id="item-row-template">
         <li class="item-row" data-item-id="0" data-state="0">
             <img class="item-thumb" alt="" loading="lazy" hidden />
-            <span class="item-name"></span>
-            <div class="state-rail" role="radiogroup" data-item-id="0" data-current="0" aria-label="">
-                <button type="button" class="state-seg is-active" data-state="0" role="radio" aria-checked="true" aria-label="@L.T("ItemState.Available")">
-                    <svg><use href="#i-state-0" /></svg>
-                    <span class="seg-label">@L.T("ItemState.Available")</span>
-                </button>
-                <button type="button" class="state-seg" data-state="1" role="radio" aria-checked="false" aria-label="@L.T("ItemState.RunningLow")">
-                    <svg><use href="#i-state-1" /></svg>
-                    <span class="seg-label">@L.T("ItemState.RunningLow")</span>
-                </button>
-                <button type="button" class="state-seg" data-state="2" role="radio" aria-checked="false" aria-label="@L.T("ItemState.OutOfStock")">
-                    <svg><use href="#i-state-2" /></svg>
-                    <span class="seg-label">@L.T("ItemState.OutOfStock")</span>
-                </button>
+            <span class="item-thumb item-thumb-icon" hidden><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i></span>
+            <div class="item-card-body">
+                <span class="item-name"></span>
+                <span class="qty-tag" hidden></span>
+                <div class="state-rail" role="radiogroup" data-item-id="0" data-current="0" aria-label="">
+                    <button type="button" class="state-seg is-active" data-state="0" role="radio" aria-checked="true" aria-label="@L.T("ItemState.Available")">
+                        <svg><use href="#i-state-0" /></svg>
+                        <span class="seg-label">@L.T("ItemState.Available")</span>
+                    </button>
+                    <button type="button" class="state-seg" data-state="1" role="radio" aria-checked="false" aria-label="@L.T("ItemState.RunningLow")">
+                        <svg><use href="#i-state-1" /></svg>
+                        <span class="seg-label">@L.T("ItemState.RunningLow")</span>
+                    </button>
+                    <button type="button" class="state-seg" data-state="2" role="radio" aria-checked="false" aria-label="@L.T("ItemState.OutOfStock")">
+                        <svg><use href="#i-state-2" /></svg>
+                        <span class="seg-label">@L.T("ItemState.OutOfStock")</span>
+                    </button>
+                </div>
             </div>
         </li>
     </template>
@@ -108,4 +134,5 @@
     <script src="~/js/lottie.js" asp-append-version="true"></script>
     <script src="~/js/status-rail.js" asp-append-version="true"></script>
     <script src="~/js/pantry.js" asp-append-version="true"></script>
+    <script src="~/js/items-view.js" asp-append-version="true"></script>
 }
