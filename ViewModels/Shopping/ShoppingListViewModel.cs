@@ -6,17 +6,18 @@ public class ShoppingListViewModel
 {
     public int FamilyId { get; set; }
     public string FamilyName { get; set; } = string.Empty;
-    public List<ShoppingItemViewModel> Items { get; set; } = new();
+    public IEnumerable<ShoppingItemViewModel> Items { get; set; } = Enumerable.Empty<ShoppingItemViewModel>();
 }
 
 public class ShoppingItemViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public ItemState State { get; set; }        // LowStock or OutOfStock only
+    public ItemState State { get; set; }
     public bool IsAdHoc { get; set; }
     public string? CategoryName { get; set; }
     public string? ImagePath { get; set; }
+    public decimal? Quantity { get; set; }
 
     public string StateKey => $"ItemState.{State}";
 }
