@@ -178,7 +178,14 @@
    The bubble is a ::before so no markup changes. It sits behind the icon
    and lifts 15px above the bar so it visibly breaks the dock edge, the
    same language as the FAB in its notch. Colour changes independently of
-   the lift, so if a browser clips the mask the active state still reads. */
+   the lift, so if a browser clips the mask the active state still reads.
+
+   Motion note: these are real page navigations, so a CSS *transition* on
+   .active would never fire — the next document renders with .active already
+   set and there is no state change to interpolate. The entry is therefore a
+   keyframe animation, which does run on first paint. Transitions are kept
+   as the exit path for the tab that loses .active (SPA-style toggling) and
+   for press feedback. */
 .nav-item::before {
     content: "";
     position: absolute;
@@ -195,10 +202,11 @@
     border-radius: 50%;
     background: var(--primary);
     box-shadow: 0 4px 10px rgba(105, 108, 86, .28);
-    transform: scale(.35);
-    transform-origin: 50% 75%;
+    transform: translateY(10px) scale(.5);
+    transform-origin: 50% 80%;
     opacity: 0;
-    transition: transform .3s cubic-bezier(.34, 1.4, .5, 1), opacity .18s ease;
+    /* exit only */
+    transition: transform .24s ease-in, opacity .18s ease-in;
 }
 /* icon and label ride above the bubble */
 .nav-item svg,
@@ -207,23 +215,65 @@
     z-index: 1;
 }
 .nav-item svg {
-    transition: transform .3s cubic-bezier(.34, 1.4, .5, 1), color .18s ease;
+    transition: transform .24s ease-in, color .2s ease;
+}
+.nav-item span {
+    transition: transform .24s ease-in;
 }
 
 .nav-item.active { color: var(--primary-strong); }
-.nav-item.active::before { transform: scale(1); opacity: 1; }
+
+/* The three pieces are staggered so the bubble leads, the icon rides up
+   just behind it and the label settles last — one gesture instead of three
+   things snapping at once. Overshoot is mild (1.24, not 1.4): a hard spring
+   on a 40px circle reads as a glitch rather than as weight. */
+.nav-item.active::before {
+    transform: none;
+    opacity: 1;
+    animation: nav-bubble-in .46s cubic-bezier(.33, 1.24, .45, 1) both;
+}
 .nav-item.active svg {
     color: var(--on-primary);
     transform: translateY(-15px);
+    animation: nav-icon-lift .44s cubic-bezier(.33, 1.24, .45, 1) 50ms both;
 }
 /* knobs now sit on olive, not on the dock surface */
 .nav-item.active svg circle[fill] { fill: var(--primary); }
-.nav-item.active span { transform: translateY(-4px); }
+.nav-item.active span {
+    transform: translateY(-4px);
+    animation: nav-label-settle .38s cubic-bezier(.33, 1.18, .48, 1) 90ms both;
+}
+
+@keyframes nav-bubble-in {
+    from { transform: translateY(12px) scale(.5); opacity: 0; }
+    60%  { opacity: 1; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes nav-icon-lift {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-15px); }
+}
+@keyframes nav-label-settle {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-4px); }
+}
+
+/* Press feedback: the tap has to acknowledge itself immediately, because
+   the page it navigates to takes longer to arrive than any animation. */
+.nav-item:not(.active):active svg { transform: scale(.86); transition-duration: .08s; }
+.nav-item:not(.active):active::before {
+    transform: translateY(6px) scale(.7);
+    opacity: .28;
+    transition-duration: .12s;
+}
 
 @media (prefers-reduced-motion: reduce) {
     .nav-item::before,
     .nav-item svg,
     .nav-item span { transition: none; }
+    .nav-item.active::before,
+    .nav-item.active svg,
+    .nav-item.active span { animation: none; }
 }
 
 /* ---------- FAB (seated in notch: half in, half out) ---------- */
