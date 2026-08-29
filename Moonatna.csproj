@@ -23,6 +23,7 @@
     <EmbeddedResource Include="Database\Scripts\Script0008_badgeLabels.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0009_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0010_nav_quickadd.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0011_localizations.sql" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,35 @@
-/* Long-press radial state picker */
+/* ==========================================================================
+   Long-press radial state picker.
+
+   Motion is driven entirely by CSS transitions over --fx/--fy (the fanned-out
+   offset, written inline by JS). The previous version animated with the Web
+   Animations API and then layered a separate `scale` property on top for the
+   active state; because the individual `scale` property applies before
+   `transform`, the `translate(-50%, -50%)` centring offset got multiplied by
+   the scale and every option jumped sideways the moment it lit up. Owning the
+   whole transform in one place removes that class of bug.
+
+   It also means the options' geometry is never mid-flight from JS's point of
+   view: hit-testing is angular, computed from the anchor point, so it does not
+   read getBoundingClientRect and does not care whether the entrance has
+   finished.
+   ========================================================================== */
+
+/* A long press is a system gesture on mobile: without this the browser starts
+   a text selection and pops the callout menu mid-press, which is what made the
+   interaction feel broken rather than slow. */
+[data-state-picker] .item-row {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* While the picker is open the finger is sliding, not scrolling. Without this
+   a few pixels of vertical drift hand the gesture to the scroller and the
+   browser fires pointercancel, killing the press. */
+[data-state-picker].picker-open {
+    touch-action: none;
+}
 
 .radial-scrim {
     position: fixed;
@@ -7,6 +38,13 @@
     background-color: var(--scrim);
     -webkit-backdrop-filter: blur(3px);
     backdrop-filter: blur(3px);
+    touch-action: none;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+}
+
+.radial-scrim.show {
+    opacity: 1;
 }
 
 .radial-picker {
@@ -17,45 +55,111 @@
     pointer-events: none;
 }
 
-.radial-option {
+.radial-option,
+.radial-close {
     position: absolute;
     left: 0;
     top: 0;
-    min-width: 3.6rem;
-    height: 3.6rem;
-    padding: 0 0.6rem;
     border: none;
     border-radius: var(--radius-full);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font: inherit;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--on-primary);
-    box-shadow: var(--shadow-lg);
     cursor: pointer;
     pointer-events: auto;
-    transition: box-shadow 0.15s, scale 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-user-select: none;
+    user-select: none;
+    will-change: transform;
+    transform: translate(-50%, -50%) translate(var(--fx), var(--fy)) scale(1);
+    transition:
+        transform 0.32s cubic-bezier(0.22, 1.18, 0.36, 1) var(--d, 0ms),
+        opacity 0.2s ease var(--d, 0ms),
+        box-shadow 0.18s ease;
 }
 
-.radial-option.state-0 {
-    background-color: var(--ok-fill);
+/* ---------- the three state options ---------- */
+.radial-option {
+    min-width: 3.6rem;
+    height: 3.6rem;
+    padding: 0 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    /* "قرب يخلص" is two words and was wrapping onto two lines inside the pill */
+    white-space: nowrap;
+    color: var(--on-primary);
+    box-shadow: var(--shadow-lg);
 }
 
-.radial-option.state-1 {
-    background-color: var(--low-fill);
-}
-
-.radial-option.state-2 {
-    background-color: var(--out-fill);
-}
+.radial-option.state-0 { background-color: var(--ok-fill); }
+.radial-option.state-1 { background-color: var(--low-fill); }
+.radial-option.state-2 { background-color: var(--out-fill); }
 
 .radial-option:hover,
 .radial-option.active {
-    scale: 1.22;
+    transform: translate(-50%, -50%) translate(var(--fx), var(--fy)) scale(1.16);
+    box-shadow: 0 0 0 5px rgba(252, 247, 240, 0.75), var(--shadow-lg);
 }
 
-.radial-option.active {
-    box-shadow: 0 0 0 5px rgba(252, 247, 240, 0.75), var(--shadow-lg);
+/* ---------- close button ----------
+   Deliberately the visual opposite of the + FAB. The FAB is olive and
+   prominent because it is the primary action; this is the least important
+   thing on screen, so it is smaller than the options and sits on a neutral
+   surface. An olive circle at the centre of the arc would out-weigh the three
+   choices that are the entire point of the menu. */
+.radial-close {
+    width: 2.6rem;
+    height: 2.6rem;
+    background-color: var(--surface);
+    color: var(--muted);
+    box-shadow: 0 0 0 1px var(--border-strong), var(--shadow-md);
+}
+
+/* The arc opens under a finger that is still down, so the release ending the
+   long press fires a synthesized click at dead centre — on the close button.
+   Nothing in the picker accepts a click until JS lifts .locked shortly after
+   that release. See unlockSoon() in state-picker.js. */
+.radial-picker.locked .radial-option,
+.radial-picker.locked .radial-close {
+    pointer-events: none;
+}
+
+.radial-close svg {
+    width: 15px;
+    height: 15px;
+}
+
+.radial-close:hover,
+.radial-close.active {
+    transform: translate(-50%, -50%) scale(1.12);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--border-strong), 0 0 0 5px rgba(252, 247, 240, 0.6), var(--shadow-md);
+}
+
+/* ---------- enter / exit ---------- */
+.radial-option.enter,
+.radial-close.enter {
+    transform: translate(-50%, -50%) scale(0.35);
+    opacity: 0;
+}
+
+/* Nothing used to animate out at all — the picker was removed from the DOM on
+   the same frame as the selection, which is most of why it read as a crash
+   rather than a dismissal. */
+.radial-picker.closing .radial-option,
+.radial-picker.closing .radial-close {
+    transform: translate(-50%, -50%) translate(calc(var(--fx) * 0.55), calc(var(--fy) * 0.55)) scale(0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition-delay: 0ms;
+    transition-duration: 0.18s;
+    transition-timing-function: ease-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .radial-scrim,
+    .radial-option,
+    .radial-close {
+        transition-duration: 0.01ms;
+    }
 }

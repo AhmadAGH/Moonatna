@@ -28,8 +28,3 @@
     -webkit-user-select: none !important;
     user-select: none !important;
 }
-
-/* Fix: radial picker options were spaced too far apart (RADIUS 100 -> ~70, same ANGLES as state-picker.js). */
-.radial-picker > button:nth-child(1) { transform: translate(-63px, -30px) !important; }
-.radial-picker > button:nth-child(2) { transform: translate(0px, -70px) !important; }
-.radial-picker > button:nth-child(3) { transform: translate(63px, -30px) !important; }
