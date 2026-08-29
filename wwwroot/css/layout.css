@@ -39,11 +39,16 @@
     --border-strong: #C7C0B6;       /* inputs — taupe alone is too faint to find */
 
     /* ---------- stock states ----------
-       Text/icon values, each AA on its own tint. --*-fill is for
-       solid surfaces carrying --on-primary text (radial picker). */
-    --ok: #4C5F3F;
-    --ok-soft: #E8EDE3;             /* 5.85:1 */
-    --ok-fill: #5A6D4C;
+       One shape for all three: dark text on its own light tint with a
+       1px border in the same dark value. Text values are AA on their
+       tint, borders are >= 4.5:1 on --bg so the chip outline is visible
+       against the page too. --*-fill is for solid surfaces carrying
+       --on-primary text (radial picker). */
+    --ok: #5F7052;                  /* brand green #687B5A, same hue 94.5deg and
+                                       saturation, lightness 42% -> 38% to clear
+                                       4.5:1 on --ok-soft (was 3.86:1) */
+    --ok-soft: #E8EDE3;             /* 4.50:1 */
+    --ok-fill: #5F7052;
 
     --low: #8A6428;                 /* darkened from #B88A4A, which failed at 2.63:1 */
     --low-soft: #F5EBDD;            /* 4.53:1 */
@@ -397,22 +402,25 @@ body {
     font-weight: 500;
 }
 
+/* All three states share one shape: dark label, light tint, 1px border in
+   the same dark value. box-shadow instead of `border` so the three chips
+   stay pixel-identical in size and nothing reflows when a state changes.
+   The outline is what carries the state in greyscale and for deuteranopia,
+   so the colour is reinforcement, not the only signal. */
 .state-chip {
     font-size: 0.78rem;
     font-weight: 600;
     border-radius: var(--radius-full);
     padding: 0.28rem 0.85rem;
     white-space: nowrap;
+    box-shadow: inset 0 0 0 1px currentColor;
     transition: background-color 0.2s, color 0.2s;
 }
 
-/* موجود — the healthy default. No fill, no colour, no attention.
-   Most items are in stock; colouring them paints the whole screen for
-   zero information and collides with the olive brand. */
+/* موجود */
 .state-0 {
-    background-color: transparent;
-    color: var(--muted);
-    padding-inline: 0.35rem;
+    background-color: var(--ok-soft);
+    color: var(--ok);
 }
 
 /* قرب يخلص */
@@ -421,12 +429,10 @@ body {
     color: var(--low);
 }
 
-/* مخلص — loudest state, gets a ring so it survives greyscale and
-   deuteranopia even before the Arabic label is read. */
+/* مخلص */
 .state-2 {
     background-color: var(--out-soft);
     color: var(--out);
-    box-shadow: inset 0 0 0 1px var(--out);
 }
 
 .row-actions {

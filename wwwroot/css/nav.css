@@ -131,12 +131,31 @@
     align-items: stretch;
     justify-content: space-between;
     padding-inline: 8px;
-    -webkit-mask: radial-gradient(circle 42px at 50% 0, transparent 41px, #000 42px);
-    mask: radial-gradient(circle 42px at 50% 0, transparent 41px, #000 42px);
+
+    /* The notch mask also has to let the active item's raised bubble poke
+       out of the top edge. A mask clips descendants to the mask image, so
+       the image is grown 40px taller than the bar and anchored to the
+       bottom; the notch circle is re-centred 40px down so it still lands
+       exactly on the bar's top edge. Everything in that extra 40px band
+       is opaque, which is what lets the bubble escape. */
+    --nav-notch: radial-gradient(circle 42px at 50% 40px, transparent 41px, #000 42px);
+    -webkit-mask-image: var(--nav-notch);
+    mask-image: var(--nav-notch);
+    -webkit-mask-size: 100% calc(100% + 40px);
+    mask-size: 100% calc(100% + 40px);
+    -webkit-mask-position: 50% 100%;
+    mask-position: 50% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    /* without no-clip the mask painting area stays the border box and the
+       raised bubble gets sheared off at the bar's top edge */
+    -webkit-mask-clip: no-clip;
+    mask-clip: no-clip;
 }
 .nav-side { display: flex; flex: 1; }
 .nav-gap { width: 84px; flex-shrink: 0; }
 .nav-item {
+    position: relative;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -154,7 +173,58 @@
 /* Organize icon: the slider knobs are punch-outs, so they must match the
    dock surface, not pure white. */
 .nav-item svg circle[fill] { fill: var(--surface); }
+
+/* ---------- active item: raised olive bubble ----------
+   The bubble is a ::before so no markup changes. It sits behind the icon
+   and lifts 15px above the bar so it visibly breaks the dock edge, the
+   same language as the FAB in its notch. Colour changes independently of
+   the lift, so if a browser clips the mask the active state still reads. */
+.nav-item::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    /* inset-inline + auto margins centre the bubble in both RTL and LTR and
+       leave `transform` free for the pop-in. */
+    inset-inline: 0;
+    /* deliberately smaller and lifted less than the 62px FAB: the FAB is the
+       primary action, this is only a location indicator. Same size and lift
+       would make two olive circles compete on one bar. */
+    width: 40px;
+    height: 40px;
+    margin-inline: auto;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 4px 10px rgba(105, 108, 86, .28);
+    transform: scale(.35);
+    transform-origin: 50% 75%;
+    opacity: 0;
+    transition: transform .3s cubic-bezier(.34, 1.4, .5, 1), opacity .18s ease;
+}
+/* icon and label ride above the bubble */
+.nav-item svg,
+.nav-item span {
+    position: relative;
+    z-index: 1;
+}
+.nav-item svg {
+    transition: transform .3s cubic-bezier(.34, 1.4, .5, 1), color .18s ease;
+}
+
 .nav-item.active { color: var(--primary-strong); }
+.nav-item.active::before { transform: scale(1); opacity: 1; }
+.nav-item.active svg {
+    color: var(--on-primary);
+    transform: translateY(-15px);
+}
+/* knobs now sit on olive, not on the dock surface */
+.nav-item.active svg circle[fill] { fill: var(--primary); }
+.nav-item.active span { transform: translateY(-4px); }
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-item::before,
+    .nav-item svg,
+    .nav-item span { transition: none; }
+}
 
 /* ---------- FAB (seated in notch: half in, half out) ---------- */
 .fab-wrap {
