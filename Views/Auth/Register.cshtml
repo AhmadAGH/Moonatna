@@ -2,7 +2,7 @@
 @inject ILocalizationService Localization
 @{
     var L = await Localization.GetStringsAsync();
-    ViewData["Title"] = L.T("Login.Title");
+    ViewData["Title"] = L.T("Register.Title");
 }
 
 <section class="auth-page">
@@ -18,30 +18,37 @@
 
         <div class="auth-card"
              id="auth-root"
-             data-mode="login"
+             data-mode="register"
              data-api-key="@Model.FirebaseApiKey"
              data-auth-domain="@Model.FirebaseAuthDomain"
              data-project-id="@Model.FirebaseProjectId"
              data-token-url="@Url.Action("Token", "Auth")"
-             data-error-text="@L.T("Login.Error")">
-            <h1 class="auth-title">@L.T("Login.Title")</h1>
-            <p class="auth-subtitle">@L.T("Login.Subtitle")</p>
+             data-error-text="@L.T("Register.Error")"
+             data-mismatch-text="@L.T("Register.PasswordMismatch")">
+            <h1 class="auth-title">@L.T("Register.Title")</h1>
+            <p class="auth-subtitle">@L.T("Register.Subtitle")</p>
 
             <form id="auth-form" class="auth-form" novalidate>
+                <label class="auth-field">
+                    <span>@L.T("Register.DisplayName")</span>
+                    <input type="text" id="auth-name" class="input" autocomplete="name" required />
+                </label>
                 <label class="auth-field">
                     <span>@L.T("Login.Email")</span>
                     <input type="email" id="auth-email" class="input" autocomplete="username" required />
                 </label>
                 <label class="auth-field">
                     <span>@L.T("Login.Password")</span>
-                    <input type="password" id="auth-password" class="input" autocomplete="current-password" required />
+                    <input type="password" id="auth-password" class="input" autocomplete="new-password" required />
                 </label>
-                <button type="button" id="forgot-password" class="link-button auth-forgot">@L.T("Login.ForgotPassword")</button>
-                <button type="submit" id="auth-submit" class="btn-primary auth-submit">@L.T("Login.SubmitButton")</button>
+                <label class="auth-field">
+                    <span>@L.T("Register.ConfirmPassword")</span>
+                    <input type="password" id="auth-password-confirm" class="input" autocomplete="new-password" required />
+                </label>
+                <button type="submit" id="auth-submit" class="btn-primary auth-submit">@L.T("Register.Submit")</button>
             </form>
 
             <p id="auth-error" class="auth-error" hidden></p>
-            <p id="reset-sent" class="auth-hint" hidden>@L.T("Login.ResetSent")</p>
 
             <div class="auth-divider"><span>@L.T("Login.OrDivider")</span></div>
 
@@ -56,8 +63,8 @@
             </button>
 
             <p class="auth-switch">
-                @L.T("Login.NoAccount")
-                <a asp-controller="Auth" asp-action="Register">@L.T("Login.CreateAccount")</a>
+                @L.T("Register.HaveAccount")
+                <a asp-controller="Auth" asp-action="Login">@L.T("Register.SignIn")</a>
             </p>
         </div>
     </div>

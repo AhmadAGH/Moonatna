@@ -31,10 +31,10 @@
     <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body>
-    <header class="topbar">
-        @if (isAuthenticated)
-        {
+<body class="@(ctrl == "Auth" ? "auth-body" : "")">
+    @if (isAuthenticated)
+    {
+        <header class="topbar">
             <a class="brand" asp-controller="Pantry" asp-action="Index">@L.T("App.Name")</a>
             <nav class="top-nav" aria-label="@L.T("Nav.Main")">
                 <a class="@Active("Pantry")" asp-controller="Pantry" asp-action="Index">@L.T("Nav.Pantry")</a>
@@ -45,8 +45,8 @@
             <div class="avatar-wrap">
                 <button type="button" class="avatar-btn" id="avatarBtn" aria-haspopup="true" aria-expanded="false">@initial</button>
             </div>
-        }
-    </header>
+        </header>
+    }
 
     <main class="page">
         @RenderBody()

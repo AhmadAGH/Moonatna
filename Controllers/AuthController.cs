@@ -25,16 +25,27 @@ public class AuthController : Controller
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToAction("Index", "Pantry");
 
-        var vm = new LoginViewModel
-        {
-            FirebaseApiKey = _config["Firebase:ApiKey"] ?? string.Empty,
-            FirebaseAuthDomain = _config["Firebase:AuthDomain"] ?? string.Empty,
-            FirebaseProjectId = _config["Firebase:ProjectId"] ?? string.Empty
-        };
-        return View(vm);
+        return View(BuildFirebaseViewModel());
     }
 
-    // The login page signs in with Google via Firebase JS, then posts the ID token here.
+    [HttpGet]
+    public IActionResult Register()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction("Index", "Pantry");
+
+        return View(BuildFirebaseViewModel());
+    }
+
+    private LoginViewModel BuildFirebaseViewModel() => new()
+    {
+        FirebaseApiKey = _config["Firebase:ApiKey"] ?? string.Empty,
+        FirebaseAuthDomain = _config["Firebase:AuthDomain"] ?? string.Empty,
+        FirebaseProjectId = _config["Firebase:ProjectId"] ?? string.Empty
+    };
+
+    // The login/register pages authenticate with Firebase JS (Google or email/password),
+    // then post the resulting ID token here.
     [HttpPost]
     public async Task<IActionResult> Token([FromBody] AuthTokenViewModel vm)
     {
