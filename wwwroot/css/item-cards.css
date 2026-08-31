@@ -196,3 +196,74 @@
         height: 100px;
     }
 }
+
+/* =====================================================
+   FULL layout — horizontal product-style card
+   (name + quantity + status segments beside a photo,
+   modelled on the reference grocery-app card).
+   Grid layout above is untouched and keeps the tall
+   top photo + compact sliding rail.
+   ===================================================== */
+.items-page[data-layout="full"] .item-row,
+.items-page[data-layout="full"] .swipe-wrap .item-row {
+    flex-direction: row;
+    align-items: stretch;
+}
+
+.items-page[data-layout="full"] .item-thumb {
+    order: 2;
+    width: 128px;
+    height: auto;
+    align-self: stretch;
+    border-radius: var(--radius-sm);
+    margin: 14px;
+    flex-shrink: 0;
+}
+
+.items-page[data-layout="full"] .item-thumb-icon {
+    width: 128px;
+}
+
+.items-page[data-layout="full"] .item-thumb-icon i {
+    font-size: 2rem;
+}
+
+.items-page[data-layout="full"] .item-card-body {
+    order: 1;
+    justify-content: center;
+    gap: .65rem;
+    padding: 1rem 1.1rem;
+}
+
+.items-page[data-layout="full"] .item-name {
+    font-size: 1.1rem;
+}
+
+/* quantity reads like the reference's price line: plain text,
+   not a pill — it sits directly under the name */
+.items-page[data-layout="full"] .qty-tag {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    color: var(--muted);
+    font-size: .95rem;
+    font-weight: 600;
+}
+
+/* Shopping's row keeps a purchase button beside the status
+   segments; give that row a bit more breathing room */
+.items-page[data-layout="full"] .row-actions {
+    gap: .6rem;
+}
+
+.items-page[data-layout="full"] .row-actions .state-rail {
+    flex: 1 1 auto;
+}
+
+@media (max-width: 420px) {
+    .items-page[data-layout="full"] .item-thumb,
+    .items-page[data-layout="full"] .item-thumb-icon {
+        width: 96px;
+        margin: 10px;
+    }
+}

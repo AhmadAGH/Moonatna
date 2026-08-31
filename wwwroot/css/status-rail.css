@@ -131,3 +131,84 @@
         transition: none;
     }
 }
+
+/* =====================================================
+   FULL layout — three equal, always-labeled segments,
+   matching the reference card's موجود / قرب يخلص / مخلص
+   row. Only the active segment carries a solid fill;
+   the other two stay flat with muted text + a hairline
+   divider, same shape whichever state is active so
+   nothing reflows on tap.
+
+   Pantry renders these as <button role="radio"> (tap to
+   change, wired in status-rail.js). Shopping renders the
+   identical markup as plain <span> with .is-readonly on
+   the rail — same look, no interaction, since Shopping's
+   state changes via the purchase action instead.
+   ===================================================== */
+.items-page[data-layout="full"] .state-rail {
+    gap: 0;
+    padding: 0;
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.items-page[data-layout="full"] .state-seg {
+    flex: 1 1 0;
+    width: auto;
+    height: auto;
+    min-height: 2.4rem;
+    padding: .5rem .35rem;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--muted);
+}
+
+.items-page[data-layout="full"] .state-seg + .state-seg {
+    box-shadow: inset 1px 0 0 var(--border);
+}
+
+.items-page[data-layout="full"] .state-seg svg {
+    width: 13px;
+    height: 13px;
+}
+
+.items-page[data-layout="full"] .state-seg .seg-label {
+    max-width: none;
+    opacity: 1;
+    overflow: visible;
+    margin-inline-start: .3rem;
+    font-size: .74rem;
+}
+
+.items-page[data-layout="full"] .state-seg[data-state="0"] { --seg-fill: var(--ok-fill); }
+.items-page[data-layout="full"] .state-seg[data-state="1"] { --seg-fill: var(--low-fill); }
+.items-page[data-layout="full"] .state-seg[data-state="2"] { --seg-fill: var(--out-fill); }
+
+.items-page[data-layout="full"] .state-seg.is-active {
+    flex: 1 1 0;
+    background: var(--seg-fill);
+    color: var(--on-primary);
+    box-shadow: none;
+}
+
+.items-page[data-layout="full"] .state-seg.is-active + .state-seg {
+    box-shadow: none;
+}
+
+.items-page[data-layout="full"] .state-rail.is-readonly .state-seg {
+    cursor: default;
+}
+
+@media (max-width: 420px) {
+    .items-page[data-layout="full"] .state-seg .seg-label {
+        font-size: .68rem;
+        margin-inline-start: .2rem;
+    }
+
+    .items-page[data-layout="full"] .state-seg {
+        padding: .45rem .2rem;
+    }
+}
