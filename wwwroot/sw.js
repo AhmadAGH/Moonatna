@@ -1,7 +1,7 @@
 // Moonatna service worker — caches STATIC assets only. Pages always hit the
 // network: pantry/shopping data must never be served stale.
 // Bump CACHE when you want clients to drop previously cached assets.
-const CACHE = "moonatna-v1";
+const CACHE = "moonatna-v2";
 const CORE = [
     "/css/layout.css",
     "/lottie/burst.json",

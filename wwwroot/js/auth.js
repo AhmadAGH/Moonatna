@@ -35,8 +35,8 @@ function clearError() {
     errorEl.hidden = true;
 }
 
-async function completeSignIn(user) {
-    const idToken = await user.getIdToken();
+async function completeSignIn(user, forceRefresh = false) {
+    const idToken = await user.getIdToken(forceRefresh);
     const response = await fetch(root.dataset.tokenUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,7 +69,10 @@ form.addEventListener("submit", async (event) => {
 
             const result = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
             await updateProfile(result.user, { displayName: nameInput.value });
-            await completeSignIn(result.user);
+            // The ID token minted at sign-up predates the profile update, so its
+            // "name" claim is still empty — force a refresh to pick it up before
+            // posting it to the backend (which reads DisplayName off that claim).
+            await completeSignIn(result.user, true);
         } else {
             const result = await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
             await completeSignIn(result.user);

@@ -12,14 +12,22 @@
 .auth-page {
     position: relative;
     min-height: 100dvh;
-    overflow: hidden;
     display: flex;
+    flex-direction: column;
     justify-content: center;
 }
 
+/* position:fixed misbehaves in several in-app/WebView browsers (e.g. links
+   opened from WhatsApp) — it can fail to paint or get stuck under other
+   layers. Absolute, sized off .auth-page's own 100dvh box, is safer and
+   still keeps the art flush with the bottom now that the fade below no
+   longer paints solid cream over the last stretch of it. */
 .auth-illustration {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     z-index: 0;
 }
 
@@ -33,15 +41,17 @@
 .auth-illustration::after {
     content: "";
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     background: linear-gradient(
         to bottom,
         var(--bg) 0%,
         rgba(252, 247, 240, 0.9) 12%,
         rgba(252, 247, 240, 0.3) 26%,
         rgba(252, 247, 240, 0) 38%,
-        rgba(252, 247, 240, 0) 82%,
-        var(--bg) 100%
+        rgba(252, 247, 240, 0) 100%
     );
 }
 
