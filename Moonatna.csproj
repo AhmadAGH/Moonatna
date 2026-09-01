@@ -28,6 +28,7 @@
     <EmbeddedResource Include="Database\Scripts\Script0015_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0017_AddNewCategories.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0016_categoryIconMediaType.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0018_fixDetergentsIcon.sql" />
   </ItemGroup>
 
   <ItemGroup>
