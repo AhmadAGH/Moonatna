@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moonatna.Repositories.Lookups;   // adjust to TalabLink's ILookupsRepository namespace
 using Moonatna.Services.Families;
 using Moonatna.Services.Items;
+using Moonatna.ViewModels.Shared;
 using Moonatna.ViewModels.Shopping;
 using System.Globalization;
 
@@ -26,8 +27,9 @@ public class ShoppingController : BaseController
 
         var categories = await _lookups.GetActiveCategoriesAsync();
         var isArabic = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar";
-        var categoryNames = categories.ToDictionary(c => c.Id, c => isArabic ? c.NameAr : c.NameEn);
-        var categoryIcons = categories.ToDictionary(c => c.Id, c => c.IconClass);
+        // one lookup: the category carries both its name and whichever icon
+        // kind it uses (Font Awesome class or a designed local file)
+        var categoryById = categories.ToDictionary(c => c.Id);
 
         var items = await _items.GetShoppingListAsync(family.Id);
 
@@ -43,8 +45,8 @@ public class ShoppingController : BaseController
                 IsAdHoc = i.IsAdHoc,
                 ImagePath = i.ImagePath,
                 Quantity = i.Quantity,
-                CategoryName = i.CategoryId.HasValue && categoryNames.TryGetValue(i.CategoryId.Value, out var cn) ? cn : null,
-                CategoryIcon = i.CategoryId.HasValue && categoryIcons.TryGetValue(i.CategoryId.Value, out var ci) ? ci : null
+                CategoryName = i.CategoryId.HasValue && categoryById.TryGetValue(i.CategoryId.Value, out var cn) ? (isArabic ? cn.NameAr : cn.NameEn) : null,
+                CategoryIcon = i.CategoryId.HasValue && categoryById.TryGetValue(i.CategoryId.Value, out var ci) ? CategoryIconViewModel.From(ci) : null
             }).ToList()
         };
 

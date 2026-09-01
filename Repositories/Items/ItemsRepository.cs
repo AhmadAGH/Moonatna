@@ -129,6 +129,19 @@ public class ItemsRepository : IItemsRepository
         await connection.ExecuteAsync(sql, new { id, imagePath });
     }
 
+    public async Task UpdateAsync(int id, string name, int? categoryId, int? quantity, int updatedByUserId)
+    {
+        const string sql = """
+            UPDATE [dbo].[Items]
+            SET [Name] = @name, [CategoryId] = @categoryId, [Quantity] = @quantity,
+                [UpdatedByUserId] = @updatedByUserId, [UpdatedAt] = GETDATE()
+            WHERE [Id] = @id
+            """;
+
+        using var connection = _connectionFactory.Create();
+        await connection.ExecuteAsync(sql, new { id, name, categoryId, quantity, updatedByUserId });
+    }
+
     public async Task ResurrectAsync(int id, ItemState state, bool isAdHoc, int updatedByUserId)
     {
         const string sql = """

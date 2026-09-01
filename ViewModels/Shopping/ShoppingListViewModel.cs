@@ -1,4 +1,5 @@
 using Moonatna.Models;
+using Moonatna.ViewModels.Shared;
 
 namespace Moonatna.ViewModels.Shopping;
 
@@ -16,7 +17,7 @@ public class ShoppingItemViewModel
     public ItemState State { get; set; }        // LowStock or OutOfStock only
     public bool IsAdHoc { get; set; }
     public string? CategoryName { get; set; }
-    public string? CategoryIcon { get; set; }
+    public CategoryIconViewModel? CategoryIcon { get; set; }
     public string? ImagePath { get; set; }
     public int? Quantity { get; set; }
 

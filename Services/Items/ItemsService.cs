@@ -96,5 +96,18 @@ namespace Moonatna.Services.Items
             await _items.UpdateImagePathAsync(itemId, imagePath);
             return true;
         }
+
+        public async Task UpdateItemAsync(int itemId, string name, int? categoryId, int? quantity, int userId)
+            => await _items.UpdateAsync(itemId, name.Trim(), categoryId, quantity, userId);
+
+        public async Task DeleteItemAsync(int itemId)
+        {
+            // Same rule as PurchaseAsync's delete branch: keep it around (archived)
+            // if a recipe still points at it, otherwise it's safe to hard-delete.
+            if (await _items.IsReferencedByRecipesAsync(itemId))
+                await _items.ArchiveAsync(itemId);
+            else
+                await _items.DeleteAsync(itemId);
+        }
     }
 }

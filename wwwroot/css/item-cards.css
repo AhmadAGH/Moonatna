@@ -8,9 +8,9 @@
      data-layout="grid"           — two columns, compact
 
    Reuses tokens from layout.css. Per that file's rule 5,
-   موجود carries no colour of its own — state-rail /
-   state-chip already encode colour correctly, this file
-   only changes the surrounding card chrome.
+   موجود carries no colour of its own — the state dots
+   already encode colour correctly, this file only changes
+   the surrounding card chrome and lays the options out.
    ===================================================== */
 
 .layout-toggle {
@@ -127,6 +127,19 @@
     font-size: 1.6rem;
 }
 
+/* a designed category icon (MediaType 2) draws in the same spot as the
+   glyph — sized in rem so both kinds scale together per layout */
+.item-thumb-icon .cat-icon {
+    width: 2.6rem;
+    height: 2.6rem;
+    object-fit: contain;
+}
+
+.items-page[data-layout="grid"] .item-thumb-icon .cat-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+}
+
 /* everything below the photo — name, quantity, state, actions */
 .item-card-body {
     display: flex;
@@ -166,24 +179,67 @@
     padding: .18rem .65rem;
 }
 
-/* keep the state rail / state chip + purchase button full width and
-   in a tidy row at the bottom of the card, instead of pinned end-aligned
-   the way they were in the old single-line compact row */
-.item-row:has(.state-rail) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-}
-
-.item-row .state-rail {
-    max-width: none;
-    margin-inline-start: 0;
-    width: 100%;
-}
-
 .row-actions {
     justify-content: space-between;
     width: 100%;
+}
+
+/* ---------- state options (state-dots.css) ----------
+   There is no wrapper element around the three buttons any more, so the
+   card body itself has to line them up: it becomes a grid whose name and
+   quantity span every column, leaving the options to fill the row below. */
+.items-page[data-layout-key="pantry"] .item-card-body {
+    display: grid;
+    /* auto, not max-content: these tracks must be able to shrink when the
+       card is narrow, otherwise a long name sizes them past the card */
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    align-content: center;
+    column-gap: 1rem;
+    row-gap: .5rem;
+    /* the body is a flex item of .item-row: without this it refuses to shrink
+       below its content, and a long name shoves the photo out of the card */
+    min-width: 0;
+}
+
+.items-page[data-layout-key="pantry"] .item-name,
+.items-page[data-layout-key="pantry"] .qty-tag {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+/* the quantity is a pill, so it keeps its content width... */
+.items-page[data-layout-key="pantry"] .qty-tag {
+    justify-self: start;
+}
+
+/* ...while the name fills the row and wraps, rather than sizing itself to
+   its text and spilling out of the card */
+.items-page[data-layout-key="pantry"] .item-name {
+    overflow-wrap: anywhere;
+}
+
+/* the two-up grid card is too narrow for three labels side by side —
+   stack them there instead, one lit line per state */
+.items-page[data-layout-key="pantry"][data-layout="grid"] .item-card-body {
+    grid-template-columns: auto;
+    row-gap: .3rem;
+}
+
+/* shopping keeps .row-actions (it also holds the ✓ button), so the options
+   just become its direct children and the button is pushed to the far end */
+.items-page[data-layout-key="shopping"] .row-actions {
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.items-page[data-layout-key="shopping"] .row-actions .purchase-btn {
+    margin-inline-start: auto;
+}
+
+.items-page[data-layout-key="shopping"][data-layout="grid"] .row-actions {
+    flex-wrap: wrap;
+    gap: .35rem .7rem;
 }
 
 @media (max-width: 480px) {
@@ -210,14 +266,24 @@
     align-items: stretch;
 }
 
+/* Fix: with height:auto + align-self:stretch, a real photo's own aspect
+   ratio fed into the flex line's cross-size calculation (the row's height
+   is otherwise indefinite, driven by its content) — so a photo made the
+   whole row, and the state options inside it, taller than a plain
+   item using the icon fallback. A fixed height sidesteps that: the photo
+   no longer has a say in how tall the row gets. */
 .items-page[data-layout="full"] .item-thumb {
     order: 2;
     width: 128px;
-    height: auto;
-    align-self: stretch;
+    height: 128px;
+    align-self: center;
     border-radius: var(--radius-sm);
     margin: 14px;
     flex-shrink: 0;
+}
+
+.items-page[data-layout="full"] img.item-thumb {
+    object-fit: cover;
 }
 
 .items-page[data-layout="full"] .item-thumb-icon {
@@ -226,6 +292,11 @@
 
 .items-page[data-layout="full"] .item-thumb-icon i {
     font-size: 2rem;
+}
+
+.items-page[data-layout="full"] .item-thumb-icon .cat-icon {
+    width: 2.2rem;
+    height: 2.2rem;
 }
 
 .items-page[data-layout="full"] .item-card-body {
@@ -256,14 +327,12 @@
     gap: .6rem;
 }
 
-.items-page[data-layout="full"] .row-actions .state-rail {
-    flex: 1 1 auto;
-}
 
 @media (max-width: 420px) {
     .items-page[data-layout="full"] .item-thumb,
     .items-page[data-layout="full"] .item-thumb-icon {
         width: 96px;
+        height: 96px;
         margin: 10px;
     }
 }

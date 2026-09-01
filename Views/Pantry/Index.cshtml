@@ -13,7 +13,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/pantry.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/status-rail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/state-dots.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/item-cards.css" asp-append-version="true" />
 }
 
@@ -22,21 +22,6 @@
          data-layout-key="pantry"
          data-set-state-url="@Url.Action("SetState", "Items")"
          data-uncategorized="@L.T("Common.Uncategorized")">
-
-    @* state icons sprite — referenced by every rail below *@
-    <svg class="svg-sprite" aria-hidden="true">
-        <symbol id="i-state-0" viewBox="0 0 24 24">
-            <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-        </symbol>
-        <symbol id="i-state-1" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
-            <path d="M4.6 14.4A8 8 0 0 0 19.4 14.4Z" fill="currentColor" />
-        </symbol>
-        <symbol id="i-state-2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
-            <path d="M9.5 9.5l5 5M14.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-        </symbol>
-    </svg>
 
     <header class="page-header">
         <h1>@L.T("Pantry.Title")</h1>
@@ -63,15 +48,15 @@
                 <ul>
                     @foreach (var item in group)
                     {
-                        <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
+                        <li class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)" data-category-id="@(item.CategoryId?.ToString() ?? "")">
                             @if (!string.IsNullOrEmpty(item.ImagePath))
                             {
-                                <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
+                                <img class="item-thumb" src="@item.ImagePath" alt="@item.Name" loading="lazy" role="button" tabindex="0" />
                             }
                             else
                             {
                                 <span class="item-thumb item-thumb-icon">
-                                    <i class="@(string.IsNullOrEmpty(item.CategoryIcon) ? "fa-solid fa-basket-shopping" : item.CategoryIcon)" aria-hidden="true"></i>
+                                    <partial name="_CategoryIcon" model="item.CategoryIcon ?? new CategoryIconViewModel()" />
                                 </span>
                             }
                             <div class="item-card-body">
@@ -80,21 +65,14 @@
                                 {
                                     <span class="qty-tag">@item.Quantity</span>
                                 }
-                                <div class="state-rail" role="radiogroup" data-item-id="@item.Id" data-current="@((int)item.State)" aria-label="@item.Name">
-                                    @for (var s = 0; s <= 2; s++)
-                                    {
-                                        var isActive = (int)item.State == s;
-                                        <button type="button"
-                                                class="state-seg@(isActive ? " is-active" : "")"
-                                                data-state="@s"
-                                                role="radio"
-                                                aria-checked="@(isActive ? "true" : "false")"
-                                                aria-label="@L.T(stateKeys[s])">
-                                            <svg><use href="#i-state-@s" /></svg>
-                                            <span class="seg-label">@L.T(stateKeys[s])</span>
-                                        </button>
-                                    }
-                                </div>
+                                @for (var s = 0; s <= 2; s++)
+                                {
+                                    var isActive = (int)item.State == s;
+                                    <button type="button"
+                                            class="state-opt@(isActive ? " is-active" : "")"
+                                            data-state="@s"
+                                            aria-pressed="@(isActive ? "true" : "false")">@L.T(stateKeys[s])</button>
+                                }
                             </div>
                         </li>
                     }
@@ -106,33 +84,49 @@
     @* template for rows added by pantry.js (quick-add) *@
     <template id="item-row-template">
         <li class="item-row" data-item-id="0" data-state="0">
-            <img class="item-thumb" alt="" loading="lazy" hidden />
+            <img class="item-thumb" alt="" loading="lazy" role="button" tabindex="0" hidden />
             <span class="item-thumb item-thumb-icon" hidden><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i></span>
             <div class="item-card-body">
                 <span class="item-name"></span>
                 <span class="qty-tag" hidden></span>
-                <div class="state-rail" role="radiogroup" data-item-id="0" data-current="0" aria-label="">
-                    <button type="button" class="state-seg is-active" data-state="0" role="radio" aria-checked="true" aria-label="@L.T("ItemState.Available")">
-                        <svg><use href="#i-state-0" /></svg>
-                        <span class="seg-label">@L.T("ItemState.Available")</span>
-                    </button>
-                    <button type="button" class="state-seg" data-state="1" role="radio" aria-checked="false" aria-label="@L.T("ItemState.RunningLow")">
-                        <svg><use href="#i-state-1" /></svg>
-                        <span class="seg-label">@L.T("ItemState.RunningLow")</span>
-                    </button>
-                    <button type="button" class="state-seg" data-state="2" role="radio" aria-checked="false" aria-label="@L.T("ItemState.OutOfStock")">
-                        <svg><use href="#i-state-2" /></svg>
-                        <span class="seg-label">@L.T("ItemState.OutOfStock")</span>
-                    </button>
-                </div>
+                <button type="button" class="state-opt is-active" data-state="0" aria-pressed="true">@L.T("ItemState.Available")</button>
+                <button type="button" class="state-opt" data-state="1" aria-pressed="false">@L.T("ItemState.RunningLow")</button>
+                <button type="button" class="state-opt" data-state="2" aria-pressed="false">@L.T("ItemState.OutOfStock")</button>
             </div>
         </li>
     </template>
+
 </section>
+
+@* Lives outside .items-page on purpose: that section's "rise" entrance
+   animation sets a CSS transform, which makes it a containing block for
+   position:fixed descendants — this sheet would then anchor to the
+   section's box instead of the viewport. *@
+<div class="item-actions-scrim" id="itemActionsScrim"></div>
+<div class="item-actions-sheet" id="itemActionsSheet"
+     data-delete-url="@Url.Action("Delete", "Items")">
+    <div class="item-actions-list" id="itemActionsList">
+        <button type="button" class="item-action-btn" id="itemActionEdit">
+            <i class="fa-solid fa-pen" aria-hidden="true"></i>
+            <span>@L.T("Pantry.Edit")</span>
+        </button>
+        <button type="button" class="item-action-btn danger" id="itemActionDelete">
+            <i class="fa-solid fa-trash" aria-hidden="true"></i>
+            <span>@L.T("Pantry.Delete")</span>
+        </button>
+    </div>
+    <div class="item-actions-confirm" id="itemActionsConfirmBox" hidden>
+        <p>@L.T("Pantry.DeleteConfirm")</p>
+        <div class="item-actions-confirm-row">
+            <button type="button" class="item-action-btn" id="itemActionCancelDelete">@L.T("Common.Cancel")</button>
+            <button type="button" class="item-action-btn danger" id="itemActionConfirmDelete">@L.T("Pantry.Delete")</button>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script src="~/js/lottie.js" asp-append-version="true"></script>
-    <script src="~/js/status-rail.js" asp-append-version="true"></script>
+    <script src="~/js/state-dots.js" asp-append-version="true"></script>
     <script src="~/js/pantry.js" asp-append-version="true"></script>
     <script src="~/js/items-view.js" asp-append-version="true"></script>
 }

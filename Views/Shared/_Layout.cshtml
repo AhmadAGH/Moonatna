@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
     <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/photo-viewer.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="@(ctrl == "Auth" ? "auth-body" : "")">
@@ -117,12 +118,18 @@
 
         <div class="add-dialog" id="addDialog" role="dialog" aria-modal="true"
              data-add-url="@Url.Action("Add", "Items")"
+             data-update-url="@Url.Action("Update", "Items")"
              data-upload-url="@Url.Action("UploadImage", "Items")"
              data-title-quick="@L.T("QuickAdd.Title.Quick")"
              data-title-adhoc="@L.T("QuickAdd.Title.AdHoc")"
              data-title-full="@L.T("QuickAdd.Title.Full")"
+             data-title-edit="@L.T("QuickAdd.Title.Edit")"
+             data-submit-text="@L.T("QuickAdd.Submit")"
+             data-save-text="@L.T("QuickAdd.SaveButton")"
              data-added-text="@L.T("QuickAdd.Added")"
-             data-error-text="@L.T("QuickAdd.Error")">
+             data-updated-text="@L.T("QuickAdd.Updated")"
+             data-error-text="@L.T("QuickAdd.Error")"
+             data-bulk-added-text="@L.T("QuickAdd.BulkAdded")">
             <div class="add-dialog-head">
                 <span class="add-dialog-title">
                     <span id="addDialogTitle">@L.T("QuickAdd.Title.Quick")</span>
@@ -132,7 +139,10 @@
             </div>
             <form id="addItemForm">
                 <div class="add-field">
-                    <input type="text" id="addNameInput" placeholder="@L.T("QuickAdd.NamePlaceholder")" autocomplete="off" />
+                    @* textarea, not input: a list can be typed as well as pasted —
+                       Enter saves, Shift+Enter starts another line (nav.js) *@
+                    <textarea id="addNameInput" rows="1" placeholder="@L.T("QuickAdd.NamePlaceholder")" autocomplete="off"></textarea>
+                    <p class="add-bulk-hint hidden" id="addBulkHint">@L.T("QuickAdd.BulkHint")</p>
                 </div>
                 <div class="add-field hidden" id="addCatsField">
                     <div class="add-cats" id="addCats">
@@ -156,10 +166,18 @@
         </div>
 
         <div class="add-toast" id="addToast" role="status"></div>
+
+        @* full-size photo viewer — shared by pantry + shopping (photo-viewer.js) *@
+        <div class="photo-viewer" id="photoViewer" role="dialog" aria-modal="true">
+            <button type="button" class="photo-viewer-close" id="photoViewerClose" aria-label="✕">✕</button>
+            <img id="photoViewerImg" alt="" />
+            <p class="photo-viewer-caption" id="photoViewerCaption"></p>
+        </div>
     }
 
     <script src="~/js/register.js" asp-append-version="true"></script>
     <script src="~/js/nav.js" asp-append-version="true"></script>
+    <script src="~/js/photo-viewer.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

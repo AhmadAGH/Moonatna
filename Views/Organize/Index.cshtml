@@ -22,7 +22,7 @@
         {
             <div class="category-zone" data-category-id="@cat.Id">
                 <header class="zone-header">
-                    <i class="@cat.IconClass"></i>
+                    <partial name="_CategoryIcon" model="CategoryIconViewModel.From(cat)" />
                     <span>@(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ar" ? cat.NameAr : cat.NameEn)</span>
                     <span class="zone-count">@(byCategory.TryGetValue(cat.Id, out var list) ? list.Count : 0)</span>
                 </header>

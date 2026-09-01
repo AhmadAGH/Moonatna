@@ -16,21 +16,6 @@
          data-layout-key="shopping"
          data-uncategorized="@L.T("Common.Uncategorized")">
 
-    @* state icons sprite — referenced by every read-only status row below *@
-    <svg class="svg-sprite" aria-hidden="true">
-        <symbol id="i-state-0" viewBox="0 0 24 24">
-            <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-        </symbol>
-        <symbol id="i-state-1" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
-            <path d="M4.6 14.4A8 8 0 0 0 19.4 14.4Z" fill="currentColor" />
-        </symbol>
-        <symbol id="i-state-2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="8.2" fill="none" stroke="currentColor" stroke-width="2.2" />
-            <path d="M9.5 9.5l5 5M14.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
-        </symbol>
-    </svg>
-
     <header class="page-header">
         <h1>@L.T("Shopping.Title")</h1>
         <div class="layout-toggle" role="group" aria-label="@L.T("Common.LayoutChoice")">
@@ -66,12 +51,12 @@
                             <div class="item-row" data-item-id="@item.Id" data-state="@((int)item.State)">
                                 @if (!string.IsNullOrEmpty(item.ImagePath))
                                 {
-                                    <img class="item-thumb" src="@item.ImagePath" alt="" loading="lazy" />
+                                    <img class="item-thumb" src="@item.ImagePath" alt="@item.Name" loading="lazy" role="button" tabindex="0" />
                                 }
                                 else
                                 {
                                     <span class="item-thumb item-thumb-icon">
-                                        <i class="@(string.IsNullOrEmpty(item.CategoryIcon) ? "fa-solid fa-basket-shopping" : item.CategoryIcon)" aria-hidden="true"></i>
+                                        <partial name="_CategoryIcon" model="item.CategoryIcon ?? new CategoryIconViewModel()" />
                                     </span>
                                 }
                                 <div class="item-card-body">
@@ -87,16 +72,11 @@
                                         <span class="qty-tag">@item.Quantity</span>
                                     }
                                     <div class="row-actions">
-                                        <div class="state-rail is-readonly" aria-label="@item.Name">
-                                            @for (var s = 0; s <= 2; s++)
-                                            {
-                                                var isActive = (int)item.State == s;
-                                                <span class="state-seg@(isActive ? " is-active" : "")" data-state="@s">
-                                                    <svg><use href="#i-state-@s" /></svg>
-                                                    <span class="seg-label">@L.T(stateKeys[s])</span>
-                                                </span>
-                                            }
-                                        </div>
+                                        @for (var s = 0; s <= 2; s++)
+                                        {
+                                            var isActive = (int)item.State == s;
+                                            <span class="state-opt is-readonly@(isActive ? " is-active" : "")" data-state="@s">@L.T(stateKeys[s])</span>
+                                        }
                                         <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">
                                             <i class="fa-solid fa-check" aria-hidden="true"></i>
                                         </button>
@@ -114,7 +94,7 @@
         <li class="swipe-wrap">
             <div class="swipe-under"><span>✓ @L.T("Shopping.Purchased")</span></div>
             <div class="item-row" data-item-id="0" data-state="2">
-                <img class="item-thumb" alt="" loading="lazy" hidden />
+                <img class="item-thumb" alt="" loading="lazy" role="button" tabindex="0" hidden />
                 <span class="item-thumb item-thumb-icon" hidden><i class="fa-solid fa-basket-shopping" aria-hidden="true"></i></span>
                 <div class="item-card-body">
                     <span class="item-name">
@@ -123,20 +103,9 @@
                     </span>
                     <span class="qty-tag" hidden></span>
                     <div class="row-actions">
-                        <div class="state-rail is-readonly" aria-label="">
-                            <span class="state-seg" data-state="0">
-                                <svg><use href="#i-state-0" /></svg>
-                                <span class="seg-label">@L.T("ItemState.Available")</span>
-                            </span>
-                            <span class="state-seg" data-state="1">
-                                <svg><use href="#i-state-1" /></svg>
-                                <span class="seg-label">@L.T("ItemState.RunningLow")</span>
-                            </span>
-                            <span class="state-seg is-active" data-state="2">
-                                <svg><use href="#i-state-2" /></svg>
-                                <span class="seg-label">@L.T("ItemState.OutOfStock")</span>
-                            </span>
-                        </div>
+                        <span class="state-opt is-readonly" data-state="0">@L.T("ItemState.Available")</span>
+                        <span class="state-opt is-readonly" data-state="1">@L.T("ItemState.RunningLow")</span>
+                        <span class="state-opt is-readonly is-active" data-state="2">@L.T("ItemState.OutOfStock")</span>
                         <button type="button" class="purchase-btn" title="@L.T("Shopping.PurchaseButton")">
                             <i class="fa-solid fa-check" aria-hidden="true"></i>
                         </button>
@@ -149,7 +118,7 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/shopping.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/status-rail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/state-dots.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/item-cards.css" asp-append-version="true" />
 }
 

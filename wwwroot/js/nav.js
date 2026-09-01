@@ -26,10 +26,13 @@
     var titles = {
         quick: dialog.dataset.titleQuick || "",
         adhoc: dialog.dataset.titleAdhoc || "",
-        full: dialog.dataset.titleFull || ""
+        full: dialog.dataset.titleFull || "",
+        edit: dialog.dataset.titleEdit || ""
     };
     var addedText = dialog.dataset.addedText || "✓";
     var errorText = dialog.dataset.errorText || "✕";
+    var bulkAddedText = dialog.dataset.bulkAddedText || "{0}";
+    var bulkHint = document.getElementById("addBulkHint");
 
     var toastTimer = null;
 
@@ -50,7 +53,10 @@
         adhocTag.classList.toggle("hidden", mode !== "adhoc");
         photoField.classList.toggle("hidden", mode === "quick");
         var hasCats = catsBox && catsBox.children.length > 0;
-        catsField.classList.toggle("hidden", mode !== "full" || !hasCats);
+        catsField.classList.toggle("hidden", (mode !== "full" && mode !== "edit") || !hasCats);
+        if (bulkHint) bulkHint.classList.toggle("hidden", mode !== "quick");
+        if (submitBtn) submitBtn.textContent = mode === "edit" ? (dialog.dataset.saveText || "") : (dialog.dataset.submitText || "");
+        if (nameInput) nameInput.style.height = "";
         resetPhoto();
         closeDock();
         scrim.classList.add("show");
@@ -74,6 +80,17 @@
         var span = document.createElement("span");
         span.textContent = label;
         photoContent.appendChild(span);
+    }
+
+    function growNameField() {
+        if (!nameInput) return;
+        nameInput.style.height = "auto";
+        nameInput.style.height = nameInput.scrollHeight + "px";
+    }
+
+    function resetNameField() {
+        if (form) form.reset();
+        if (nameInput) nameInput.style.height = "";
     }
 
     function showToast(text) {
@@ -133,19 +150,124 @@
         });
     }
 
+    // edit: opens the same dialog pre-filled with an existing item's data;
+    // called by pantry.js from the long-press action sheet
+    function openEditDialog(item) {
+        setMode("edit");
+        dialog.dataset.editItemId = String(item.id);
+        if (nameInput) nameInput.value = item.name || "";
+
+        if (catsBox) {
+            catsBox.querySelectorAll(".add-cat").forEach(function (c) {
+                var match = item.categoryId != null && Number(c.dataset.categoryId) === Number(item.categoryId);
+                c.classList.toggle("sel", match);
+            });
+        }
+
+        if (item.imagePath && photoContent) {
+            photoContent.innerHTML = "";
+            var img = document.createElement("img");
+            img.className = "add-photo-preview";
+            img.src = item.imagePath;
+            photoContent.appendChild(img);
+            var span = document.createElement("span");
+            span.textContent = photoContent.dataset.label || "";
+            photoContent.appendChild(span);
+        }
+    }
+    window.MoonatnaAdd = { openEdit: openEditDialog };
+
+    // bulk add: each line typed or pasted into the quick-add field becomes
+    // its own item, instead of one item named after the whole block
+    async function bulkAdd(lines) {
+        if (submitBtn) submitBtn.disabled = true;
+        var added = 0;
+        for (var i = 0; i < lines.length; i++) {
+            try {
+                var res = await fetch(dialog.dataset.addUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: lines[i], isAdHoc: false, categoryId: null })
+                });
+                if (!res.ok) continue;
+                var item = await res.json();
+                document.dispatchEvent(new CustomEvent("moonatna:item-added", { detail: item }));
+                added++;
+            } catch (err) { /* skip this line, keep going */ }
+        }
+        closeDialog();
+        resetNameField();
+        showToast(added > 0 ? bulkAddedText.replace("{0}", String(added)) : errorText);
+        if (submitBtn) submitBtn.disabled = false;
+    }
+
+    if (nameInput) {
+        // the field is a textarea so a list can be typed as well as pasted;
+        // it grows with the list instead of scrolling a one-line box
+        nameInput.addEventListener("input", growNameField);
+
+        // Enter saves (what the single-line input used to do),
+        // Shift+Enter starts the next item on its own line
+        nameInput.addEventListener("keydown", function (e) {
+            if (e.key !== "Enter" || e.shiftKey) return;
+            e.preventDefault();
+            if (form) form.requestSubmit();
+        });
+    }
+
     // submit: save the item, then the photo (best-effort), then tell the page
     if (form) {
         form.addEventListener("submit", async function (e) {
             e.preventDefault();
-            var name = nameInput.value.trim();
-            if (!name) { nameInput.focus(); return; }
 
             var mode = dialog.dataset.mode || "quick";
+            var lines = nameInput.value
+                .split(/\r?\n/)
+                .map(function (l) { return l.trim(); })
+                .filter(Boolean);
+            if (!lines.length) { nameInput.focus(); return; }
+
+            // several lines in quick mode = one item per line. The other modes
+            // carry a photo/category that belongs to a single item, so there
+            // the lines collapse back into one name.
+            if (mode === "quick" && lines.length > 1) {
+                await bulkAdd(lines);
+                return;
+            }
+            var name = lines.join(" ");
             var selChip = catsBox ? catsBox.querySelector(".add-cat.sel") : null;
-            var categoryId = mode === "full" && selChip ? Number(selChip.dataset.categoryId) : null;
+            var categoryId = (mode === "full" || mode === "edit") && selChip ? Number(selChip.dataset.categoryId) : null;
 
             if (submitBtn) submitBtn.disabled = true;
             try {
+                if (mode === "edit") {
+                    var itemId = Number(dialog.dataset.editItemId);
+                    var updateRes = await fetch(dialog.dataset.updateUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ itemId: itemId, name: name, categoryId: categoryId })
+                    });
+                    if (!updateRes.ok) throw new Error("update failed");
+                    var updated = await updateRes.json();
+
+                    var editFile = photoInput && photoInput.files && photoInput.files[0];
+                    if (editFile) {
+                        try {
+                            var editFd = new FormData();
+                            editFd.append("ItemId", String(itemId));
+                            editFd.append("Photo", editFile);
+                            await fetch(dialog.dataset.uploadUrl, { method: "POST", body: editFd });
+                        } catch (uploadErr) { /* photo is best-effort — the edit itself is saved */ }
+                    }
+
+                    document.dispatchEvent(new CustomEvent("moonatna:item-updated", { detail: updated }));
+                    closeDialog();
+                    resetNameField();
+                    resetPhoto();
+                    showToast(dialog.dataset.updatedText || addedText);
+                    return;
+                }
+
                 var res = await fetch(dialog.dataset.addUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -170,7 +292,7 @@
 
                 document.dispatchEvent(new CustomEvent("moonatna:item-added", { detail: item }));
                 closeDialog();
-                form.reset();
+                resetNameField();
                 resetPhoto();
                 showToast(addedText);
             } catch (err) {

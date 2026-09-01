@@ -16,6 +16,7 @@ namespace Moonatna.Repositories.Items
         Task<bool> IsReferencedByRecipesAsync(int id);
         Task UpdateCategoryAsync(int id, int? categoryId);
         Task UpdateImagePathAsync(int id, string? imagePath);
+        Task UpdateAsync(int id, string name, int? categoryId, int? quantity, int updatedByUserId);
         Task ResurrectAsync(int id, ItemState state, bool isAdHoc, int updatedByUserId);
         Task<IEnumerable<Item>> GetByFamilyIdAsync(int familyId);
 

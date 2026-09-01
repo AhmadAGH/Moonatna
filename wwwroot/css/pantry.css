@@ -28,3 +28,80 @@
     -webkit-user-select: none !important;
     user-select: none !important;
 }
+
+/* ---------- long-press action sheet: Edit / Delete ---------- */
+.item-actions-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 999;
+}
+.item-actions-scrim.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.item-actions-sheet {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    max-width: 480px;
+    margin-inline: auto;
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 20px 60px rgba(41, 41, 39, .25);
+    transform: translateY(115%);
+    transition: transform .25s cubic-bezier(.3, 1.1, .4, 1);
+    z-index: 1000;
+}
+.item-actions-sheet.show { transform: none; }
+
+.item-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    border-radius: 14px;
+    padding: 13px 14px;
+    font: inherit;
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+}
+.item-action-btn:active { background: var(--surface-2); }
+.item-action-btn i { width: 18px; text-align: center; }
+.item-action-btn.danger { color: var(--out); }
+
+.item-actions-confirm { padding: 6px 8px 2px; }
+.item-actions-confirm p {
+    margin: 0 0 10px;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+}
+.item-actions-confirm-row {
+    display: flex;
+    gap: 8px;
+}
+.item-actions-confirm-row .item-action-btn {
+    justify-content: center;
+    background: var(--surface-2);
+}
+.item-actions-confirm-row .item-action-btn.danger {
+    background: var(--out-soft);
+}

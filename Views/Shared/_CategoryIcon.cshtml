@@ -1,0 +1,15 @@
+@model CategoryIconViewModel
+@* One category icon, either kind — see CategoryIconViewModel.
+
+   A local icon is drawn as <img> so the designer's SVG keeps its own
+   colours and shape exactly as exported; a Font Awesome glyph stays an
+   <i> and keeps inheriting currentColor from whatever surrounds it.
+   Both carry .cat-icon / the class list the surrounding CSS already sizes. *@
+@if (Model.UsesLocalIcon)
+{
+    <img class="cat-icon" src="@Model.IconPath" alt="" aria-hidden="true" loading="lazy" />
+}
+else
+{
+    <i class="@Model.ResolvedClass" aria-hidden="true"></i>
+}

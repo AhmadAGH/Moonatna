@@ -55,6 +55,15 @@
     );
 }
 
+/* On a wide screen the pattern has to be cropped so hard to cover the
+   viewport that it stops reading as artwork — desktop drops it entirely
+   and keeps the flat --bg cream the rest of the app sits on. */
+@media (min-width: 768px) {
+    .auth-illustration {
+        display: none;
+    }
+}
+
 .auth-content {
     position: relative;
     z-index: 1;

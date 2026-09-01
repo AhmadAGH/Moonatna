@@ -41,6 +41,14 @@
     text-align: center;
 }
 
+/* designed category icon (MediaType 2) — same slot as the glyph */
+.zone-header .cat-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+    object-fit: contain;
+    flex: none;
+}
+
 .zone-count {
     margin-inline-start: auto;
     background-color: var(--surface-2);

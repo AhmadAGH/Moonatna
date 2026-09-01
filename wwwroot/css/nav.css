@@ -410,7 +410,13 @@
     font-size: .9rem;
 }
 .add-field { margin-bottom: 12px; }
-.add-field input[type="text"] {
+.add-bulk-hint {
+    margin: 6px 2px 0;
+    font-size: .78rem;
+    color: var(--muted);
+}
+.add-field input[type="text"],
+.add-field textarea {
     width: 100%;
     border: 1.5px solid var(--border-strong);
     border-radius: 14px;
@@ -419,7 +425,15 @@
     font-size: .95rem;
     outline: none;
 }
-.add-field input[type="text"]:focus { border-color: var(--primary); }
+.add-field textarea {
+    display: block;
+    resize: none;
+    overflow-y: auto;
+    max-height: 8.5rem;
+    line-height: 1.45;
+}
+.add-field input[type="text"]:focus,
+.add-field textarea:focus { border-color: var(--primary); }
 .add-cats { display: flex; flex-wrap: wrap; gap: 7px; }
 .add-cat {
     border: 1.5px solid var(--border-strong);
@@ -489,7 +503,8 @@
     box-shadow: var(--focus-ring);
 }
 
-.add-field input[type="text"]:focus { box-shadow: var(--focus-ring); }
+.add-field input[type="text"]:focus,
+.add-field textarea:focus { box-shadow: var(--focus-ring); }
 
 /* ---------- toast ---------- */
 .add-toast {

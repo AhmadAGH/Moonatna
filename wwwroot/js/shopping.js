@@ -29,6 +29,7 @@ function appendRow(item) {
     const iconTile = wrap.querySelector(".item-thumb-icon");
     if (item.imagePath) {
         img.src = item.imagePath;
+        img.alt = item.name;
         img.hidden = false;
         iconTile.hidden = true;
     } else {

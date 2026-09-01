@@ -1,4 +1,5 @@
 using Moonatna.Models;
+using Moonatna.ViewModels.Shared;
 
 namespace Moonatna.ViewModels.Pantries;
 
@@ -14,8 +15,9 @@ public class PantryItemViewModel
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public ItemState State { get; set; }
+    public int? CategoryId { get; set; }
     public string? CategoryName { get; set; }
-    public string? CategoryIcon { get; set; }
+    public CategoryIconViewModel? CategoryIcon { get; set; }
     public string? ImagePath { get; set; }
     public int? Quantity { get; set; }
 

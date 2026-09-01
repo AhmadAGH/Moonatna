@@ -66,6 +66,29 @@ public class ItemsController : BaseController
         return Ok();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Update([FromBody] UpdateItemViewModel vm)
+    {
+        var guard = await VerifyItemFamilyAsync(vm.ItemId);
+        if (guard is not null) return guard;
+        if (string.IsNullOrWhiteSpace(vm.Name)) return BadRequest();
+
+        await _items.UpdateItemAsync(vm.ItemId, vm.Name, vm.CategoryId, vm.Quantity, UserId);
+
+        var item = await _items.GetByIdAsync(vm.ItemId);
+        return Ok(new { item!.Id, item.Name, item.Quantity, item.CategoryId, state = (int)item.State, item.ImagePath });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete([FromBody] DeleteItemViewModel vm)
+    {
+        var guard = await VerifyItemFamilyAsync(vm.ItemId);
+        if (guard is not null) return guard;
+
+        await _items.DeleteItemAsync(vm.ItemId);
+        return Ok();
+    }
+
     // IDOR guard: never mutate an item that belongs to another family.
     private async Task<IActionResult?> VerifyItemFamilyAsync(int itemId)
     {

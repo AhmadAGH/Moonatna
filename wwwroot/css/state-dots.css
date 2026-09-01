@@ -1,0 +1,96 @@
+/* =====================================================
+   STATE DOTS — three plain text buttons, each with a
+   status LED beside it.
+
+   Replaces the segmented .state-rail: there is no
+   container element any more. The buttons sit directly
+   in .item-card-body (pantry) / .row-actions (shopping),
+   so the row carries no bar chrome at all — the layout
+   that puts them in a line lives in item-cards.css.
+
+   The active state's dot is lit: bigger, full colour,
+   with a halo glowing outward. The other two read as
+   switched off — small and dimmed, but still tinted with
+   their own colour so the row still scans by colour.
+
+   Palette (tokens from layout.css):
+     موجود    0 → --ok
+     قرب يخلص 1 → --low
+     مخلص     2 → --out
+   ===================================================== */
+
+/* the two unlit states sit back — smaller and quieter than the lit one,
+   which is the only label that needs to be read at a glance */
+.state-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: .32rem;
+    padding: .25rem .1rem;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: .68rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--muted);
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color .18s ease, font-size .18s ease;
+}
+
+.state-opt[data-state="0"] { --dot: var(--ok);  --dot-soft: var(--ok-soft); }
+.state-opt[data-state="1"] { --dot: var(--low); --dot-soft: var(--low-soft); }
+.state-opt[data-state="2"] { --dot: var(--out); --dot-soft: var(--out-soft); }
+
+/* the LED — switched off by default */
+.state-opt::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--dot);
+    opacity: .3;
+    transition:
+        width .2s var(--ease-spring),
+        height .2s var(--ease-spring),
+        opacity .2s ease,
+        box-shadow .25s ease;
+}
+
+/* lit */
+.state-opt.is-active {
+    font-size: .76rem;
+    color: var(--dot);
+    font-weight: 800;
+}
+
+.state-opt.is-active::before {
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+    /* flat ring first, so an engine without color-mix() still shows a halo */
+    box-shadow: 0 0 0 2px var(--dot-soft);
+    box-shadow:
+        0 0 0 2px color-mix(in srgb, var(--dot) 20%, transparent),
+        0 0 7px 1px color-mix(in srgb, var(--dot) 55%, transparent);
+}
+
+.state-opt:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 6px;
+}
+
+/* shopping renders the same markup as spans — display only */
+.state-opt.is-readonly {
+    cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .state-opt,
+    .state-opt::before {
+        transition: none;
+    }
+}

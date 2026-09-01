@@ -1,0 +1,94 @@
+/* =====================================================
+   PHOTO VIEWER — tap an item's photo (pantry or shopping
+   list) to see it full size over a dimmed page.
+
+   Global, like the nav dock: the markup lives in
+   _Layout.cshtml so both item pages share one viewer.
+   ===================================================== */
+
+img.item-thumb {
+    cursor: zoom-in;
+}
+
+.photo-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .9rem;
+    padding: 1.5rem;
+    background: rgba(24, 22, 20, .88);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+}
+
+.photo-viewer.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.photo-viewer img {
+    max-width: min(100%, 1100px);
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: var(--radius);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .5);
+    transform: scale(.96);
+    transition: transform .22s var(--ease-spring);
+}
+
+.photo-viewer.show img {
+    transform: none;
+}
+
+.photo-viewer-caption {
+    margin: 0;
+    max-width: 90%;
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.photo-viewer-close {
+    position: absolute;
+    top: max(1rem, env(safe-area-inset-top));
+    inset-inline-end: 1rem;
+    width: 2.4rem;
+    height: 2.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color .15s ease;
+}
+
+.photo-viewer-close:hover {
+    background: rgba(255, 255, 255, .3);
+}
+
+.photo-viewer-close:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* the page behind must not scroll under the viewer */
+body.photo-open {
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .photo-viewer,
+    .photo-viewer img {
+        transition: none;
+    }
+}

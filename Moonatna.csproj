@@ -25,6 +25,8 @@
     <EmbeddedResource Include="Database\Scripts\Script0010_nav_quickadd.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0011_localizations.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0014_localizations.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0015_localizations.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0016_categoryIconMediaType.sql" />
   </ItemGroup>
 
   <ItemGroup>
