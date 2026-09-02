@@ -22,8 +22,14 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Console first, deliberately: UseSerilog replaces the default logging
+// providers, so without it nothing reaches stdout and `journalctl -u
+// Moonatna.service` shows no application errors at all. Seq is only
+// configured in Development — in Production the URL falls back to
+// localhost:5341, which silently drops every line when no Seq runs there.
 builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration)
+          .WriteTo.Console()
           .WriteTo.Seq(context.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341"));
 
 // ============ Firebase Admin SDK ============
@@ -69,6 +75,10 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
+
+// one line per request with method, path, status and duration — enough to tell
+// a failing AJAX call's 400 from its 404 from its 500 straight out of journald
+app.UseSerilogRequestLogging();
 
 // ============ Database migrations (DbUp) ============
 var connectionString = app.Configuration.GetConnectionString("DefaultConnection");

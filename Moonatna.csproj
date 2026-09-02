@@ -29,6 +29,7 @@
     <EmbeddedResource Include="Database\Scripts\Script0017_AddNewCategories.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0016_categoryIconMediaType.sql" />
     <EmbeddedResource Include="Database\Scripts\Script0018_fixDetergentsIcon.sql" />
+    <EmbeddedResource Include="Database\Scripts\Script0019_ensureItemQuantity.sql" />
   </ItemGroup>
 
   <ItemGroup>
